@@ -1,7 +1,7 @@
 const form = document.getElementById('workout-form');
 const logTable = document.querySelector('#log-table tbody');
 const checklistCarousel = document.getElementById('checklist-carousel');
-const bestsTable = document.querySelector('#bests-table tbody');
+// Removed bestsTable since personal bests section is gone
 const ctx = document.getElementById('progressChart').getContext('2d');
 const exerciseSelect = document.getElementById('exercise');
 const dateInput = document.getElementById('date');
@@ -107,18 +107,7 @@ function renderChecklist(){
   }
 }
 
-function renderBests(){
-  bestsTable.innerHTML='';
-  const dataByExercise={};
-  workouts.forEach(w=>{ if(!dataByExercise[w.exercise]) dataByExercise[w.exercise]=[]; dataByExercise[w.exercise].push(w); });
-  for(const ex in dataByExercise){
-    const arr=dataByExercise[ex]; const maxWeight=Math.max(...arr.map(a=>a.weight));
-    const avgWeight=(arr.reduce((s,a)=>s+a.weight,0)/arr.length).toFixed(1);
-    const avgReps=(arr.reduce((s,a)=>s+a.reps,0)/arr.length).toFixed(1);
-    const row=document.createElement('tr'); row.innerHTML=`<td>${ex}</td><td>${maxWeight}</td><td>${avgWeight}</td><td>${avgReps}</td>`;
-    bestsTable.appendChild(row);
-  }
-}
+// Removed renderBests since personal bests section is gone
 
 function renderChart(){
   if (chart) {
@@ -155,7 +144,7 @@ function renderChart(){
   }
 }
 
-function renderAll(filter=null){ renderLog(filter); renderChecklist(); renderBests(); renderChart(); }
+function renderAll(filter=null){ renderLog(filter); renderChecklist(); renderChart(); }
 
 // Event listeners
 form.addEventListener('submit',async e=>{
