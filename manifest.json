@@ -1,0 +1,9 @@
+{
+  "name": "Gym Tracker",
+  "short_name": "GymTracker",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f0f2f5",
+  "description": "Track your gym workouts and progress.",
+  "icons": []
+}

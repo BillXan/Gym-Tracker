@@ -1,0 +1,39 @@
+body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f0f2f5; }
+h1, h2 { text-align: center; margin: 10px 0; }
+.container { max-width: 1000px; margin: auto; padding: 20px; }
+
+/* Forms */
+form { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)) auto; gap: 10px; margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+input, select, button, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 8px; }
+textarea { resize: vertical; }
+button { background: #ff7f50; color: #fff; border: none; cursor: pointer; transition: 0.3s; }
+button:hover { background: #e96b3d; }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
+th { background: #fafafa; }
+.actions button { margin: 0 2px; padding: 4px 8px; font-size: 12px; }
+
+/* Checklist */
+.checklist, .personal-bests { margin-top: 20px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.done { color: green; font-weight: bold; }
+.missing { color: red; font-weight: bold; }
+
+/* Chart */
+canvas { margin-top: 30px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+/* Horizontal carousel for checklist */
+.carousel { display: flex; overflow-x: auto; gap: 15px; scroll-snap-type: x mandatory; padding: 10px 0; }
+.carousel::-webkit-scrollbar { height: 8px; }
+.carousel::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 4px; }
+.category-box { flex: 0 0 220px; background: #fff; border-radius: 12px; padding: 15px; scroll-snap-align: start; box-shadow: 0 2px 5px rgba(0,0,0,0.1); min-width: 180px; max-width: 80vw; }
+.category-box h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; }
+
+/* Responsive adjustments */
+@media(max-width: 900px) { .category-box { flex: 0 0 200px; } }
+@media(max-width: 600px) { 
+  .category-box { flex: 0 0 90%; }
+  form { grid-template-columns: 1fr; }
+  table, th, td { font-size: 14px; }
+}
