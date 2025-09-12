@@ -44,9 +44,11 @@ function populateExerciseSelect(){
 }
 
 // Save/load from backend
+const API_BASE = 'https://gym-tracker-rmhb.onrender.com';
+
 async function loadData() {
   try {
-    const res = await fetch('/api/workouts');
+    const res = await fetch(`${API_BASE}/api/workouts`);
     workouts = await res.json();
     renderAll();
   } catch (e) {
@@ -56,7 +58,7 @@ async function loadData() {
 
 async function saveData() {
   try {
-    await fetch('/api/workouts', {
+    await fetch(`${API_BASE}/api/workouts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(workouts)
