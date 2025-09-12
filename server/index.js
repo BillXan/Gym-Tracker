@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -9,6 +10,7 @@ const app = express();
 const PORT = 3000;
 const CSV_FILE = '/tmp/workouts.csv';
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '..'))); // Serve frontend
 
