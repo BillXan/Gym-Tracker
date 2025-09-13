@@ -4,10 +4,24 @@ h1, h2 { text-align: center; margin: 10px 0; }
 
 /* Forms */
 form { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)) auto; gap: 10px; margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-input, select, button, textarea { padding: 8px; border: 1px solid #ccc; border-radius: 8px; }
+input, select, button, textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: box-shadow 0.3s, border-color 0.3s, background 0.3s;
+}
 textarea { resize: vertical; }
-button { background: #ff7f50; color: #fff; border: none; cursor: pointer; transition: 0.3s; }
-button:hover { background: #e96b3d; }
+button {
+  background: #ff7f50;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+button:hover {
+  background: #e96b3d;
+  transform: scale(1.02);
+}
 
 /* Table */
 table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -21,7 +35,25 @@ th { background: #fafafa; }
 .missing { color: red; font-weight: bold; }
 
 /* Chart */
-canvas { margin-top: 30px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+canvas {
+  margin-top: 30px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Chart controls */
+.chart-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
 
 /* Horizontal carousel for checklist */
 .carousel { display: flex; overflow-x: auto; gap: 15px; scroll-snap-type: x mandatory; padding: 10px 0; }
@@ -29,6 +61,35 @@ canvas { margin-top: 30px; background: #fff; padding: 15px; border-radius: 12px;
 .carousel::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 4px; }
 .category-box { flex: 0 0 220px; background: #fff; border-radius: 12px; padding: 15px; scroll-snap-align: start; box-shadow: 0 2px 5px rgba(0,0,0,0.1); min-width: 180px; max-width: 80vw; }
 .category-box h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; }
+
+/* Dropdown open animation */
+select:focus, select:hover {
+  box-shadow: 0 0 0 3px #ff7f50;
+  border-color: #ff7f50;
+  background: #fff7f2;
+}
+
+input[type="text"]:focus, input[type="text"]:hover,
+input[type="number"]:focus, input[type="number"]:hover,
+input[type="date"]:focus, input[type="date"]:hover,
+textarea:focus, textarea:hover {
+  box-shadow: 0 0 0 3px #ff7f50;
+  border-color: #ff7f50;
+  background: #fff7f2;
+}
+
+/* Example for menus (if you have dropdown menus with .menu class) */
+.menu {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+.menu.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
 
 /* Responsive adjustments */
 @media(max-width: 900px) { .category-box { flex: 0 0 200px; } }

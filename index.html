@@ -79,14 +79,16 @@
 <!-- Progress Chart Box -->
 <div class="progress-chart-box" style="margin-top:20px; background:#fff; padding:15px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
   <h2>Progress Chart</h2>
-  <label for="chart-type">View: </label>
-  <select id="chart-type">
-    <option value="weight">Weight</option>
-    <option value="reps">Reps</option>
-  </select>
-  <select id="chart-exercise">
-    <option value="">All Exercises</option>
-  </select>
+  <div class="chart-controls">
+    <label for="chart-type">View: </label>
+    <select id="chart-type">
+      <option value="weight">Weight</option>
+      <option value="reps">Reps</option>
+    </select>
+    <select id="chart-exercise">
+      <option value="">All Exercises</option>
+    </select>
+  </div>
   <canvas id="progressChart"></canvas>
 </div>
 </div>
