@@ -8,7 +8,7 @@ const { stringify } = require('csv-stringify/sync');
 
 const app = express();
 const PORT = 3000;
-const CSV_FILE = '/tmp/workouts.csv';
+const CSV_FILE = path.join(__dirname, 'workouts.csv');
 
 app.use(cors());
 app.use(bodyParser.json());
