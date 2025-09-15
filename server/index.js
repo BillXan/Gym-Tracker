@@ -3,6 +3,8 @@ const cors = require('cors');
 
 const bodyParser = require('body-parser');
 const { google } = require('googleapis');
+const fs = require('fs');
+console.log('Credentials file exists:', fs.existsSync('/etc/secrets/credentials.json'));
 const credentials = require('/etc/secrets/credentials.json'); // Use Render Secret Files path
 const SPREADSHEET_ID = '1yHqwV5Zsd8tZbmu6UA-F0WJASX9hvlxin7ckLBk0NKE'; // Replace with your actual Google Sheet ID
 const auth = new google.auth.GoogleAuth({
