@@ -25,21 +25,26 @@ app.use(express.static(path.join(__dirname, '..'))); // Serve frontend
 // Load workouts from Google Sheets
 async function loadWorkouts() {
   console.log('Loading workouts from Google Sheets...');
-  const client = await auth.getClient();
-  const res = await sheets.spreadsheets.values.get({
-    auth: client,
-    spreadsheetId: SPREADSHEET_ID,
-    range: 'Sheet1!A2:E', // Assumes header in row 1
-  });
-  const rows = res.data.values || [];
-  console.log('Loaded rows:', rows);
-  return rows.map(row => ({
-    date: row[0] || '',
-    exercise: row[1] || '',
-    weight: parseFloat(row[2]) || 0,
-    reps: parseInt(row[3]) || 0,
-    notes: row[4] || ''
-  }));
+  try {
+    const client = await auth.getClient();
+    const res = await sheets.spreadsheets.values.get({
+      auth: client,
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'Sheet1!A2:E', // Assumes header in row 1
+    });
+    const rows = res.data.values || [];
+    console.log('Loaded rows:', rows);
+    return rows.map(row => ({
+      date: row[0] || '',
+      exercise: row[1] || '',
+      weight: parseFloat(row[2]) || 0,
+      reps: parseInt(row[3]) || 0,
+      notes: row[4] || ''
+    }));
+  } catch (err) {
+    console.error('Error loading workouts from Google Sheets:', err);
+    throw err;
+  }
 }
 
 // Save all workouts to Google Sheets (overwrite)
