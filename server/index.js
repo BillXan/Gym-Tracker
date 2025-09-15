@@ -54,7 +54,19 @@ async function saveWorkouts(workouts) {
   console.log('Saving workouts to Google Sheets...');
   console.log('Workouts:', workouts);
   const client = await auth.getClient();
-  // Clear and overwrite all data
+  if (workouts.length === 0) {
+    // Clear all rows below the header
+    const clearResult = await sheets.spreadsheets.values.update({
+      auth: client,
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'Sheet1!A2:E',
+      valueInputOption: 'RAW',
+      requestBody: { values: [] }
+    });
+    console.log('Sheet cleared:', clearResult.data);
+    return;
+  }
+  // Overwrite with new data
   const values = workouts.map(w => [w.date, w.exercise, w.weight, w.reps, w.notes]);
   console.log('Values to save:', values);
   const result = await sheets.spreadsheets.values.update({
@@ -62,9 +74,7 @@ async function saveWorkouts(workouts) {
     spreadsheetId: SPREADSHEET_ID,
     range: 'Sheet1!A2',
     valueInputOption: 'RAW',
-    requestBody: {
-      values
-    }
+    requestBody: { values }
   });
   console.log('Save result:', result.data);
 }
