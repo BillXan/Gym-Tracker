@@ -1,8 +1,28 @@
-// ...existing code...
 
-// Express app and middleware setup
+// Imports and variable declarations
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const { google } = require('googleapis');
+const fs = require('fs');
+console.log('Credentials file exists:', fs.existsSync('/etc/secrets/credentials.json'));
+const credentials = require('/etc/secrets/credentials.json'); // Use Render Secret Files path
+const SPREADSHEET_ID = '1yHqwV5Zsd8tZbmu6UA-F0WJASX9hvlxin7ckLBk0NKE'; // Replace with your actual Google Sheet ID
+const auth = new google.auth.GoogleAuth({
+  credentials,
+  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+});
+const sheets = google.sheets('v4');
+const path = require('path');
 
-// Purge all contents of the Google Sheet
+// Express app initialization and middleware
+const app = express();
+const PORT = 3000;
+app.use(cors());
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, '..'))); // Serve frontend
+
+// Route: Purge all contents of the Google Sheet
 app.post('/api/clearSheet', async (req, res) => {
   try {
     console.log('Received request to clear all sheet data');
@@ -20,7 +40,7 @@ app.post('/api/clearSheet', async (req, res) => {
   }
 });
 
-// Delete a specific workout from Google Sheets by matching all fields
+// Route: Delete a specific workout from Google Sheets by matching all fields
 app.post('/api/deleteWorkout', async (req, res) => {
   const workout = req.body;
   console.log('Received request to delete workout:', workout);
@@ -64,28 +84,6 @@ app.post('/api/deleteWorkout', async (req, res) => {
     return res.status(500).json({ error: 'Failed to delete workout', details: err.message });
   }
 });
-const express = require('express');
-const cors = require('cors');
-
-const bodyParser = require('body-parser');
-const { google } = require('googleapis');
-const fs = require('fs');
-console.log('Credentials file exists:', fs.existsSync('/etc/secrets/credentials.json'));
-const credentials = require('/etc/secrets/credentials.json'); // Use Render Secret Files path
-const SPREADSHEET_ID = '1yHqwV5Zsd8tZbmu6UA-F0WJASX9hvlxin7ckLBk0NKE'; // Replace with your actual Google Sheet ID
-const auth = new google.auth.GoogleAuth({
-  credentials,
-  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-});
-const sheets = google.sheets('v4');
-const path = require('path');
-
-const app = express();
-const PORT = 3000;
-
-app.use(cors());
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, '..'))); // Serve frontend
 
 
 
