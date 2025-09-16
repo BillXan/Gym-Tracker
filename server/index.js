@@ -1,6 +1,6 @@
 // ...existing code...
 
-// Place this after app is defined and setup
+// Express app and middleware setup
 
 // Purge all contents of the Google Sheet
 app.post('/api/clearSheet', async (req, res) => {
@@ -19,6 +19,7 @@ app.post('/api/clearSheet', async (req, res) => {
     res.status(500).json({ error: 'Failed to clear sheet', details: e.message });
   }
 });
+
 // Delete a specific workout from Google Sheets by matching all fields
 app.post('/api/deleteWorkout', async (req, res) => {
   const workout = req.body;
