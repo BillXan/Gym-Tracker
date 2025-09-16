@@ -338,7 +338,22 @@ window.deleteWorkout=async function(i){
 
 applyFilterBtn.addEventListener('click',()=>{ renderAll({exercise:filterExercise.value,start:filterStart.value,end:filterEnd.value}); });
 clearFilterBtn.addEventListener('click',()=>{ filterExercise.value=''; filterStart.value=''; filterEnd.value=''; renderAll(); });
-clearAllBtn.addEventListener('click',async()=>{ if(confirm("Delete all data?")){ workouts=[]; await saveData(); renderAll(); } });
+clearAllBtn.addEventListener('click',async()=>{
+  if(confirm("Delete all data?")){
+    console.log('[DeleteAll] Sending request to clearSheet endpoint...');
+    const res = await fetch(`${API_BASE}/api/clearSheet`, { method: 'POST' });
+    console.log('[DeleteAll] Response:', res);
+    if (res.ok) {
+      workouts=[];
+      console.log('[DeleteAll] Workouts array cleared, rendering UI...');
+      renderAll();
+    } else {
+      const err = await res.text();
+      console.error('[DeleteAll] Error clearing sheet:', err);
+      alert('Failed to clear sheet: ' + err);
+    }
+  }
+});
 chartTypeSelect.addEventListener('change',renderChart);
 chartExerciseSelect.addEventListener('change',renderChart);
 

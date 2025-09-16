@@ -1,3 +1,20 @@
+// Purge all contents of the Google Sheet
+app.post('/api/clearSheet', async (req, res) => {
+  try {
+    console.log('Received request to clear all sheet data');
+    const client = await auth.getClient();
+    const clearRes = await sheets.spreadsheets.values.clear({
+      auth: client,
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'Sheet1', // Clears all data in Sheet1
+    });
+    console.log('Clear response:', clearRes.data);
+    res.json({ success: true });
+  } catch (e) {
+    console.error('Error clearing sheet:', e);
+    res.status(500).json({ error: 'Failed to clear sheet', details: e.message });
+  }
+});
 // Delete a specific workout from Google Sheets by matching all fields
 app.post('/api/deleteWorkout', async (req, res) => {
   const workout = req.body;
