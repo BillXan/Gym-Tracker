@@ -1,6 +1,7 @@
 // Delete a specific workout from Google Sheets by matching all fields
 app.post('/api/deleteWorkout', async (req, res) => {
   const workout = req.body;
+  console.log('Received request to delete workout:', workout);
   try {
     const client = await auth.getClient();
     // Get all rows
@@ -10,6 +11,7 @@ app.post('/api/deleteWorkout', async (req, res) => {
       range: 'Sheet1!A2:E',
     });
     const rows = getRes.data.values || [];
+    console.log('Current rows in sheet:', JSON.stringify(rows, null, 2));
     // Find matching row index
     const matchIndex = rows.findIndex(row =>
       row[0] === workout.date &&
@@ -18,18 +20,22 @@ app.post('/api/deleteWorkout', async (req, res) => {
       String(row[3]) === String(workout.reps) &&
       (row[4] || '') === (workout.notes || '')
     );
+    console.log('Match index:', matchIndex);
     if (matchIndex === -1) {
+      console.log('Workout not found in sheet.');
       return res.status(404).json({ error: 'Workout not found in sheet' });
     }
     // Clear the matching row
     const rowNum = 2 + matchIndex; // Sheet1!A2 is first data row
-    await sheets.spreadsheets.values.update({
+    console.log(`Overwriting row ${rowNum} with '*deleted*'`);
+    const updateRes = await sheets.spreadsheets.values.update({
       auth: client,
       spreadsheetId: SPREADSHEET_ID,
       range: `Sheet1!A${rowNum}:E${rowNum}`,
       valueInputOption: 'RAW',
-      requestBody: { values: [['', '', '', '', '']] }
+      requestBody: { values: [['*deleted*', '*deleted*', '*deleted*', '*deleted*', '*deleted*']] }
     });
+    console.log('Update response:', JSON.stringify(updateRes.data, null, 2));
     return res.json({ success: true });
   } catch (err) {
     console.error('Error deleting workout:', err);
