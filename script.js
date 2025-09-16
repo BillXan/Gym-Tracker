@@ -182,7 +182,23 @@ form.addEventListener('submit',async e=>{
 });
 
 window.editWorkout=async function(i){ const w=workouts[i]; document.getElementById('date').value=w.date; exerciseSelect.value=w.exercise; document.getElementById('weight').value=w.weight; document.getElementById('reps').value=w.reps; document.getElementById('notes').value=w.notes; workouts.splice(i,1); await saveData(); renderAll(); };
-window.deleteWorkout=async function(i){ workouts.splice(i,1); await saveData(); renderAll(); };
+window.deleteWorkout=async function(i){
+  const deleted = workouts[i];
+  workouts.splice(i,1);
+  // Send deleted workout to backend for precise row deletion
+  try {
+    await fetch(`${API_BASE}/api/deleteWorkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(deleted)
+    });
+    console.log('Requested backend to delete workout:', deleted);
+  } catch (e) {
+    console.error('Failed to request backend workout deletion', e);
+  }
+  await saveData();
+  renderAll();
+};
 
 applyFilterBtn.addEventListener('click',()=>{ renderAll({exercise:filterExercise.value,start:filterStart.value,end:filterEnd.value}); });
 clearFilterBtn.addEventListener('click',()=>{ filterExercise.value=''; filterStart.value=''; filterEnd.value=''; renderAll(); });
