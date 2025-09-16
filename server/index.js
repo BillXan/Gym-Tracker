@@ -1,3 +1,7 @@
+// ...existing code...
+
+// Place this after app is defined and setup
+
 // Purge all contents of the Google Sheet
 app.post('/api/clearSheet', async (req, res) => {
   try {
