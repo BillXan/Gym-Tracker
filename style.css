@@ -1,13 +1,47 @@
-body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f0f2f5; }
+/* Make flex container stretch children to equal height */
+.container > div[style*='display: flex'] {
+  align-items: stretch !important;
+}
+/* Fade-in animation for checklist items */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+/* Fade-out animation for checklist items */
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #181a20;
+  color: #e0e0e0;
+}
 h1, h2 { text-align: center; margin: 10px 0; }
 .container { max-width: 1000px; margin: auto; padding: 20px; }
 
 /* Forms */
-form { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)) auto; gap: 10px; margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(150px,1fr)) auto;
+  gap: 10px;
+  margin-bottom: 20px;
+  background: #23262f;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
 input, select, button, textarea {
   padding: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #444;
   border-radius: 8px;
+  background: #23262f;
+  color: #e0e0e0;
   transition: box-shadow 0.3s, border-color 0.3s, background 0.3s;
 }
 textarea { resize: vertical; }
@@ -22,25 +56,50 @@ button:hover {
   background: #e96b3d;
   transform: scale(1.02);
 }
+button:hover {
+  background: #e96b3d;
+  transform: scale(1.02);
+}
 
 /* Table */
-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-th, td { border: 1px solid #eee; padding: 10px; text-align: center; }
-th { background: #fafafa; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: #23262f;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+th, td {
+  border: 1px solid #444;
+  padding: 10px;
+  text-align: center;
+}
+th {
+  background: #23262f;
+  color: #ff7f50;
+}
 .actions button { margin: 0 2px; padding: 4px 8px; font-size: 12px; }
 
 /* Checklist */
-.checklist, .personal-bests { margin-top: 20px; background: #fff; padding: 15px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.done { color: green; font-weight: bold; }
-.missing { color: red; font-weight: bold; }
+.checklist, .personal-bests {
+  margin-top: 20px;
+  background: #23262f;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+.done { color: #4caf50; font-weight: bold; }
+.missing { color: #ff5252; font-weight: bold; }
 
 /* Chart */
 canvas {
   margin-top: 30px;
-  background: #fff;
+  background: #23262f;
   padding: 15px;
   border-radius: 12px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -59,15 +118,19 @@ canvas {
 .carousel { display: flex; overflow-x: auto; gap: 15px; scroll-snap-type: x mandatory; padding: 10px 0; }
 .carousel::-webkit-scrollbar { height: 8px; }
 .carousel::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 4px; }
-.category-box { flex: 0 0 220px; background: #fff; border-radius: 12px; padding: 15px; scroll-snap-align: start; box-shadow: 0 2px 5px rgba(0,0,0,0.1); min-width: 180px; max-width: 80vw; }
+.category-box {
+  flex: 0 0 220px;
+  background: #23262f;
+  border-radius: 12px;
+  padding: 15px;
+  scroll-snap-align: start;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  min-width: 180px;
+  max-width: 80vw;
+}
 .category-box h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; }
 
 /* Dropdown open animation */
-select:focus, select:hover {
-  box-shadow: 0 0 0 3px #ff7f50;
-  border-color: #ff7f50;
-  background: #fff7f2;
-}
 
 input[type="text"]:focus, input[type="text"]:hover,
 input[type="number"]:focus, input[type="number"]:hover,
@@ -75,7 +138,8 @@ input[type="date"]:focus, input[type="date"]:hover,
 textarea:focus, textarea:hover {
   box-shadow: 0 0 0 3px #ff7f50;
   border-color: #ff7f50;
-  background: #fff7f2;
+  background: #23262f;
+  color: #e0e0e0;
 }
 
 /* Example for menus (if you have dropdown menus with .menu class) */
@@ -98,3 +162,26 @@ textarea:focus, textarea:hover {
   form { grid-template-columns: 1fr; }
   table, th, td { font-size: 14px; }
 }
+
+.category-box {
+  background: #23262f;
+  color: #e0e0e0;
+  /* ...other styles... */
+}
+
+input, select, textarea, button {
+  background: #23262f;
+  color: #e0e0e0;
+  border: 1px solid #444;
+}
+
+input:focus, input:hover,
+select:focus, select:hover,
+textarea:focus, textarea:hover,
+button:focus, button:hover {
+  background: #23262f;
+  color: #e0e0e0;
+  border-color: #ff7f50;
+  box-shadow: 0 0 0 3px #ff7f50;
+}
+

@@ -58,6 +58,120 @@ async function loadData() {
   }
 }
 
+  // Infer muscle group from exercise name
+  function inferGroup(exName) {
+  const name = exName.toLowerCase();
+  console.log('[CreativeWorkout] inferring group for:', exName);
+  if (name.match(/bench|chest|fly|pec/)) { console.log('[CreativeWorkout] inferred Chest'); return 'Chest'; }
+  if (name.match(/squat|lunge|leg press|calf|quad|hamstring/)) { console.log('[CreativeWorkout] inferred Legs'); return 'Legs'; }
+  if (name.match(/deadlift|pull-up|row|lat|back/)) { console.log('[CreativeWorkout] inferred Back'); return 'Back'; }
+  if (name.match(/press|shoulder|raise|shrug/)) { console.log('[CreativeWorkout] inferred Shoulders'); return 'Shoulders'; }
+  if (name.match(/curl|tricep|bicep|arm/)) { console.log('[CreativeWorkout] inferred Arms'); return 'Arms'; }
+  console.log('[CreativeWorkout] inferred Other');
+  return 'Other';
+  }
+
+  // Creative Today's Workout Generator using backend data
+  function getTodaysCreativeWorkout() {
+    const today = new Date().toISOString().slice(0, 10);
+    console.log('[CreativeWorkout] Today:', today);
+    console.log('[CreativeWorkout] Workouts array:', workouts);
+    // Use all exercises from the weekly checklist
+    const allExercises = [];
+    for (const group in exercises) {
+      exercises[group].forEach(ex => allExercises.push(ex));
+    }
+    console.log('[CreativeWorkout] All exercises from weekly checklist:', allExercises);
+    // Find completed exercises for today
+    const completed = new Set(workouts.filter(w => w.date === today).map(w => w.exercise));
+    console.log('[CreativeWorkout] Completed today:', Array.from(completed));
+    // Group uncompleted exercises by inferred group
+    const pool = {};
+    allExercises.forEach(ex => {
+      if (!completed.has(ex)) {
+        const group = inferGroup(ex);
+        console.log('[CreativeWorkout] Adding', ex, 'to group', group);
+        if (!pool[group]) pool[group] = [];
+        pool[group].push(ex);
+      } else {
+        console.log('[CreativeWorkout] Skipping completed exercise:', ex);
+      }
+    });
+    console.log('[CreativeWorkout] Pool of uncompleted exercises by group:', pool);
+    // Shuffle muscle groups for variety
+    const groups = Object.keys(pool).filter(g => pool[g].length > 0);
+    console.log('[CreativeWorkout] Groups available:', groups);
+    for (let i = groups.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [groups[i], groups[j]] = [groups[j], groups[i]];
+    }
+    console.log('[CreativeWorkout] Groups after shuffle:', groups);
+    // Build workout list, alternating groups
+    const result = [];
+    let lastGroup = null;
+    while (groups.length > 0) {
+      let idx = groups.findIndex(g => g !== lastGroup);
+      if (idx === -1) idx = 0;
+      const group = groups[idx];
+      console.log('[CreativeWorkout] Picking group:', group);
+      const exIdx = Math.floor(Math.random() * pool[group].length);
+      const exercise = pool[group][exIdx];
+      console.log('[CreativeWorkout] Picked exercise:', exercise);
+      result.push({ group, exercise });
+      lastGroup = group;
+      pool[group].splice(exIdx, 1);
+      if (pool[group].length === 0) {
+        console.log('[CreativeWorkout] Group', group, 'is now empty, removing');
+        groups.splice(idx, 1);
+      }
+    }
+    console.log('[CreativeWorkout] Final generated list:', result);
+    return result;
+  }
+
+  function renderTodaysCreativeWorkout() {
+    const listContainer = document.getElementById('creative-workout-list');
+    if (!listContainer) {
+      console.warn('[CreativeWorkout] creative-workout-list div not found!');
+      return;
+    }
+    const list = getTodaysCreativeWorkout();
+    console.log('[CreativeWorkout] List to render:', list);
+    if (list.length === 0) {
+      listContainer.innerHTML = '<p>All exercises completed for today! 🎉</p>';
+      console.log('[CreativeWorkout] All exercises completed for today!');
+      return;
+    }
+    // Get previous items
+    const prevLis = Array.from(listContainer.querySelectorAll('li'));
+    // Build new list
+    const ul = document.createElement('ul');
+    list.forEach(item => {
+      const li = document.createElement('li');
+      li.innerHTML = `<b>${item.exercise}</b> <span style="color:gray">(${item.group})</span>`;
+      ul.appendChild(li);
+    });
+    // Fade out all previous items
+    prevLis.forEach(prevLi => {
+      prevLi.classList.add('fade-out');
+      setTimeout(() => {
+        if (prevLi.parentNode) prevLi.parentNode.removeChild(prevLi);
+      }, 500);
+    });
+    // After fade-out, fade in new items
+    setTimeout(() => {
+      listContainer.innerHTML = '';
+      Array.from(ul.children).forEach(li => {
+        li.classList.add('fade-in');
+      });
+      listContainer.appendChild(ul);
+    }, prevLis.length ? 500 : 0);
+    console.log('[CreativeWorkout] Rendered creative workout UI with', list.length, 'items');
+  }
+
+  // Render creative workout on load and after data changes
+  function renderAll(filter=null){ renderLog(filter); renderChecklist(); renderChart(); renderTodaysCreativeWorkout(); }
+
 async function saveData() {
   try {
     await fetch(`${API_BASE}/api/workouts`, {
@@ -77,7 +191,7 @@ function renderLog(filter=null){
   logTable.innerHTML = '';
   // Add header row
   const header = document.createElement('tr');
-  header.innerHTML = '<th>Date</th><th>Exercise</th><th>Weight</th><th>Reps</th><th>Notes</th><th>Actions</th>';
+  //header.innerHTML = '<th>Date</th><th>Exercise</th><th>Weight</th><th>Reps</th><th>Notes</th><th>Actions</th>';
   logTable.appendChild(header);
 
   let data = workouts;
@@ -117,11 +231,33 @@ function renderLog(filter=null){
 function renderChecklist(){
   checklistCarousel.innerHTML='';
   const thisWeek=getWeekString(new Date());
+  // Calculate overall weekly checklist percentage
+  let totalRequired=0, totalDone=0;
+  for(const group in exercises){
+    exercises[group].forEach(ex=>{
+      const maxCount=weeklyTargets[ex]||1;
+      totalRequired += maxCount;
+      const count=workouts.filter(w=>w.exercise===ex&&getWeekString(new Date(w.date))===thisWeek).length;
+      totalDone += Math.min(count, maxCount);
+    });
+  }
+  const overallPercent = totalRequired === 0 ? 0 : Math.round((totalDone/totalRequired)*100);
+
+  // Add header with overall percent
+  const header = document.createElement('h2');
+  header.innerHTML = `Weekly Checklist <span class="done" style="font-size:1em; margin-left:10px;">✅ ${overallPercent}%</span>`;
+  checklistCarousel.appendChild(header);
+
   for(const group in exercises){
     const box=document.createElement('div'); box.className='category-box';
-    let total=exercises[group].length, doneCount=0;
-    exercises[group].forEach(ex=>{ const count=workouts.filter(w=>w.exercise===ex&&getWeekString(new Date(w.date))===thisWeek).length; if(count>=weeklyTargets[ex]) doneCount++; });
-    const percent=Math.round((doneCount/total)*100);
+    let groupRequired=0, groupDone=0;
+    exercises[group].forEach(ex=>{
+      const maxCount=weeklyTargets[ex]||1;
+      groupRequired += maxCount;
+      const count=workouts.filter(w=>w.exercise===ex&&getWeekString(new Date(w.date))===thisWeek).length;
+      groupDone += Math.min(count, maxCount);
+    });
+    const percent=Math.round((groupDone/groupRequired)*100);
     const title=document.createElement('h3'); title.innerHTML=`${groupIcons[group]||''} ${group} - ✅ ${percent}% done`;
     box.appendChild(title);
     exercises[group].forEach(ex=>{
@@ -172,7 +308,7 @@ function renderChart(){
   }
 }
 
-function renderAll(filter=null){ renderLog(filter); renderChecklist(); renderChart(); }
+function renderAll(filter=null){ renderLog(filter); renderChecklist(); renderChart(); renderTodaysCreativeWorkout(); }
 
 // Event listeners
 form.addEventListener('submit',async e=>{

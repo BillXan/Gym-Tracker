@@ -11,11 +11,45 @@
 </head>
 <body>
 <div class="container">
+
+
 <h1>🏋️ Gym Bro</h1>
+<div style="display: flex; gap: 24px; align-items: flex-start; margin-bottom: 2em; flex-wrap: wrap;">
+  <div style="flex:1; min-width:320px; background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:flex; flex-direction:column;">
+    <h2 style="margin-top:0;">Add Exercise</h2>
+    <form id="workout-form" style="margin-bottom:0;">
+      <input type="date" id="date" required />
+      <select id="exercise" required>
+        <option value="">Select Exercise</option>
+        <option value="Bench Press">Bench Press</option>
+        <option value="Incline Dumbbell Press">Incline Dumbbell Press</option>
+        <option value="Chest Fly">Chest Fly</option>
+        <option value="Squat">Squat</option>
+        <option value="Lunges">Lunges</option>
+        <option value="Leg Press">Leg Press</option>
+        <option value="Deadlift">Deadlift</option>
+        <option value="Pull-Ups">Pull-Ups</option>
+        <option value="Barbell Row">Barbell Row</option>
+        <option value="Overhead Press">Overhead Press</option>
+        <option value="Lateral Raise">Lateral Raise</option>
+        <option value="Bicep Curl">Bicep Curl</option>
+        <option value="Tricep Pushdown">Tricep Pushdown</option>
+      </select>
+      <input type="number" id="weight" placeholder="Weight (kg)" required />
+      <input type="number" id="reps" placeholder="Reps" required />
+      <textarea id="notes" placeholder="Notes (optional)"></textarea>
+      <button type="submit">Add</button>
+    </form>
+  </div>
+  <div id="creative-workout" style="flex:1; min-width:320px; background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:flex; flex-direction:column;">
+    <h2 style="margin-top:0;">Today's Workout</h2>
+    <div id="creative-workout-list"></div>
+  </div>
+</div>
 
 
 
-<!-- Workout Form -->
+<!-- Workout Form 
 <form id="workout-form">
   <input type="date" id="date" required />
   <select id="exercise" required>
@@ -39,10 +73,10 @@
   <textarea id="notes" placeholder="Notes (optional)"></textarea>
   <button type="submit">Add</button>
 </form>
-
+-->
 
 <!-- Workout Log Box -->
-<div class="workout-log-box" style="margin-top:20px; background:#fff; padding:15px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+<div class="workout-log-box" style="margin-top:20px; background:#24262f; padding:15px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
   <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
     <h2 style="margin: 0; text-align: center; width: 100%;">Workout Log</h2>
     <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;">
@@ -72,7 +106,7 @@
 </div>
 
 <!-- Progress Chart Box -->
-<div class="progress-chart-box" style="margin-top:20px; background:#fff; padding:15px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+<div class="progress-chart-box" style="margin-top:20px; background:#24262f; padding:15px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
   <h2>Progress Chart</h2>
   <div class="chart-controls">
     <label for="chart-type">View: </label>
