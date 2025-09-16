@@ -1,3 +1,41 @@
+// Delete a specific workout from Google Sheets by matching all fields
+app.post('/api/deleteWorkout', async (req, res) => {
+  const workout = req.body;
+  try {
+    const client = await auth.getClient();
+    // Get all rows
+    const getRes = await sheets.spreadsheets.values.get({
+      auth: client,
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'Sheet1!A2:E',
+    });
+    const rows = getRes.data.values || [];
+    // Find matching row index
+    const matchIndex = rows.findIndex(row =>
+      row[0] === workout.date &&
+      row[1] === workout.exercise &&
+      String(row[2]) === String(workout.weight) &&
+      String(row[3]) === String(workout.reps) &&
+      (row[4] || '') === (workout.notes || '')
+    );
+    if (matchIndex === -1) {
+      return res.status(404).json({ error: 'Workout not found in sheet' });
+    }
+    // Clear the matching row
+    const rowNum = 2 + matchIndex; // Sheet1!A2 is first data row
+    await sheets.spreadsheets.values.update({
+      auth: client,
+      spreadsheetId: SPREADSHEET_ID,
+      range: `Sheet1!A${rowNum}:E${rowNum}`,
+      valueInputOption: 'RAW',
+      requestBody: { values: [['', '', '', '', '']] }
+    });
+    return res.json({ success: true });
+  } catch (err) {
+    console.error('Error deleting workout:', err);
+    return res.status(500).json({ error: 'Failed to delete workout', details: err.message });
+  }
+});
 const express = require('express');
 const cors = require('cors');
 
@@ -77,6 +115,18 @@ async function saveWorkouts(workouts) {
     requestBody: { values }
   });
   console.log('Save result:', result.data);
+
+  // Clear any rows below the last workout (in case sheet had more rows before)
+  const clearStartRow = 2 + values.length;
+  const clearRange = `Sheet1!A${clearStartRow}:E`;
+  const clearResult = await sheets.spreadsheets.values.update({
+    auth: client,
+    spreadsheetId: SPREADSHEET_ID,
+    range: clearRange,
+    valueInputOption: 'RAW',
+    requestBody: { values: [] }
+  });
+  console.log('Cleared extra rows:', clearRange, clearResult.data);
 }
 
 // Append a single workout to Google Sheets

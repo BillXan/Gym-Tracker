@@ -47,10 +47,12 @@ function populateExerciseSelect(){
 const API_BASE = 'https://gym-tracker-rmhb.onrender.com';
 
 async function loadData() {
+  console.log('Calling loadData()...');
   try {
     const res = await fetch(`${API_BASE}/api/workouts`);
-    workouts = await res.json();
-    renderAll();
+  workouts = await res.json();
+  console.log('Loaded workouts from backend:', workouts);
+  renderAll();
   } catch (e) {
     console.error('Failed to load workouts from backend', e);
   }
@@ -71,17 +73,43 @@ function getWeekString(date){ const d=new Date(date),y=d.getFullYear(); const w=
 
 // Render functions
 function renderLog(filter=null){
-  logTable.innerHTML='';
-  let data=workouts;
-  if(filter){
-    if(filter.exercise) data=data.filter(w=>w.exercise===filter.exercise);
-    if(filter.start) data=data.filter(w=>w.date>=filter.start);
-    if(filter.end) data=data.filter(w=>w.date<=filter.end);
+  // Completely reprogrammed workout log rendering
+  logTable.innerHTML = '';
+  // Add header row
+  const header = document.createElement('tr');
+  header.innerHTML = '<th>Date</th><th>Exercise</th><th>Weight</th><th>Reps</th><th>Notes</th><th>Actions</th>';
+  logTable.appendChild(header);
+
+  let data = workouts;
+  if (filter) {
+    data = data.filter(w => {
+      if (filter.exercise && w.exercise !== filter.exercise) return false;
+      if (filter.start && w.date < filter.start) return false;
+      if (filter.end && w.date > filter.end) return false;
+      return true;
+    });
   }
-  data.forEach((w,i)=>{
-    const row=document.createElement('tr');
-    row.innerHTML=`<td>${w.date}</td><td>${w.exercise}</td><td>${w.weight}</td><td>${w.reps}</td><td>${w.notes||''}</td>
-    <td class="actions"><button onclick="editWorkout(${i})">Edit</button><button onclick="deleteWorkout(${i})">Delete</button></td>`;
+
+  if (!Array.isArray(data) || data.length === 0) {
+    const row = document.createElement('tr');
+    row.innerHTML = '<td colspan="6">No workouts logged yet.</td>';
+    logTable.appendChild(row);
+    return;
+  }
+
+  data.forEach((w, i) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${w.date || ''}</td>
+      <td>${w.exercise || ''}</td>
+      <td>${w.weight || ''}</td>
+      <td>${w.reps || ''}</td>
+      <td>${w.notes || ''}</td>
+      <td class="actions">
+        <button onclick="editWorkout(${i})">Edit</button>
+        <button onclick="deleteWorkout(${i})">Delete</button>
+      </td>
+    `;
     logTable.appendChild(row);
   });
 }
@@ -201,14 +229,14 @@ function importCSV(file) {
 }
 
 // CSV UI Event Listeners
-document.getElementById('export-csv').addEventListener('click', exportCSV);
+/*document.getElementById('export-csv').addEventListener('click', exportCSV);
 document.getElementById('import-csv-btn').addEventListener('click', () => {
   document.getElementById('import-csv').click();
 });
 document.getElementById('import-csv').addEventListener('change', (e) => {
   if (e.target.files.length) importCSV(e.target.files[0]);
 });
-
+*/
 // Init
 populateExerciseSelect();
 loadData();
