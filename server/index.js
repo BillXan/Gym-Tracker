@@ -30,7 +30,7 @@ app.post('/api/clearSheet', async (req, res) => {
     const clearRes = await sheets.spreadsheets.values.clear({
       auth: client,
       spreadsheetId: SPREADSHEET_ID,
-      range: 'Sheet1', // Clears all data in Sheet1
+      range: 'Sheet1!A2:Z', // Clears all data except the header row
     });
     console.log('Clear response:', clearRes.data);
     res.json({ success: true });
@@ -69,13 +69,13 @@ app.post('/api/deleteWorkout', async (req, res) => {
     }
     // Clear the matching row
     const rowNum = 2 + matchIndex; // Sheet1!A2 is first data row
-    console.log(`Overwriting row ${rowNum} with '*deleted*'`);
+    console.log(`Overwriting row ${rowNum} with ' '`);
     const updateRes = await sheets.spreadsheets.values.update({
       auth: client,
       spreadsheetId: SPREADSHEET_ID,
       range: `Sheet1!A${rowNum}:E${rowNum}`,
       valueInputOption: 'RAW',
-      requestBody: { values: [['*deleted*', '*deleted*', '*deleted*', '*deleted*', '*deleted*']] }
+      requestBody: { values: [[' ', ' ', ' ', ' ', ' ']] }
     });
     console.log('Update response:', JSON.stringify(updateRes.data, null, 2));
     return res.json({ success: true });
