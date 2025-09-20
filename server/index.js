@@ -88,6 +88,48 @@ app.post('/api/deleteWorkout', async (req, res) => {
 
 
 
+// Load exercises from the "Exercise List" sheet
+async function loadExercises() {
+  console.log('Loading exercises from Exercise List sheet...');
+  try {
+    const client = await auth.getClient();
+    const res = await sheets.spreadsheets.values.get({
+      auth: client,
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'Exercise List!A2:B', // Assumes columns: Exercise Name, Muscle Group
+    });
+    const rows = res.data.values || [];
+    console.log('Loaded exercise rows:', rows);
+    
+    // Group exercises by muscle group
+    const exercisesByGroup = {};
+    rows.forEach(row => {
+      const exerciseName = row[0] || '';
+      const muscleGroup = row[1] || 'Other';
+      
+      if (exerciseName.trim()) {
+        if (!exercisesByGroup[muscleGroup]) {
+          exercisesByGroup[muscleGroup] = [];
+        }
+        exercisesByGroup[muscleGroup].push(exerciseName);
+      }
+    });
+    
+    console.log('Grouped exercises:', exercisesByGroup);
+    return exercisesByGroup;
+  } catch (err) {
+    console.error('Error loading exercises from Google Sheets:', err);
+    // Return default exercises if sheet doesn't exist or has errors
+    return {
+      "Chest": ["Bench Press", "Incline Dumbbell Press", "Chest Fly"],
+      "Legs": ["Squat", "Lunges", "Leg Press"],
+      "Back": ["Deadlift", "Pull-Ups", "Barbell Row"],
+      "Shoulders": ["Overhead Press", "Lateral Raise"],
+      "Arms": ["Bicep Curl", "Tricep Pushdown"]
+    };
+  }
+}
+
 // Load workouts from Google Sheets
 async function loadWorkouts() {
   console.log('Loading workouts from Google Sheets...');
@@ -169,6 +211,16 @@ async function appendWorkout(workout) {
   });
 }
 
+
+// Get all exercises
+app.get('/api/exercises', async (req, res) => {
+  try {
+    const exercises = await loadExercises();
+    res.json(exercises);
+  } catch (e) {
+    res.status(500).json({ error: 'Failed to load exercises' });
+  }
+});
 
 // Get all workouts
 app.get('/api/workouts', async (req, res) => {

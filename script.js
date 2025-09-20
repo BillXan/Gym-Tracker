@@ -16,28 +16,43 @@ const chartExerciseSelect = document.getElementById('chart-exercise');
 
 dateInput.valueAsDate = new Date();
 let workouts = [];
+let exercises = {}; // Will be loaded from backend
 let chart;
 
-// Exercises and emojis
-let exercises = {
-  "Chest": ["Bench Press","Incline Dumbbell Press","Chest Fly"],
-  "Legs": ["Squat","Lunges","Leg Press"],
-  "Back": ["Deadlift","Pull-Ups","Barbell Row"],
-  "Shoulders": ["Overhead Press","Lateral Raise"],
-  "Arms": ["Bicep Curl","Tricep Pushdown"]
-};
+// Exercises will be loaded from backend
 const groupIcons = {"Chest":"🫀","Legs":"🦿","Back":"🏋️‍♂️","Shoulders":"🤼‍♂️","Arms":"💪"};
 const weeklyTargets = {"Bench Press":2,"Incline Dumbbell Press":1,"Chest Fly":1,"Squat":2,"Lunges":1,"Leg Press":1,"Deadlift":1,"Pull-Ups":2,"Barbell Row":1,"Overhead Press":2,"Lateral Raise":1,"Bicep Curl":2,"Tricep Pushdown":1};
 
 // Populate selects
 function populateExerciseSelect(){
-  exerciseSelect.innerHTML=''; filterExercise.innerHTML='<option value="">All Exercises</option>'; chartExerciseSelect.innerHTML='<option value="">All Exercises</option>';
+  exerciseSelect.innerHTML=''; 
+  filterExercise.innerHTML='<option value="">All Exercises</option>'; 
+  chartExerciseSelect.innerHTML='<option value="">All Exercises</option>';
+  
+  // Only populate if exercises are loaded
+  if (!exercises || Object.keys(exercises).length === 0) {
+    console.log('No exercises loaded yet, skipping populate');
+    return;
+  }
+  
   for(const group in exercises){
-    const optgroup=document.createElement('optgroup'); optgroup.label=group;
+    const optgroup=document.createElement('optgroup'); 
+    optgroup.label=group;
     exercises[group].forEach(ex=>{
-      const option=document.createElement('option'); option.value=ex; option.textContent=ex; optgroup.appendChild(option);
-      const fOption=document.createElement('option'); fOption.value=ex; fOption.textContent=ex; filterExercise.appendChild(fOption);
-      const cOption=document.createElement('option'); cOption.value=ex; cOption.textContent=ex; chartExerciseSelect.appendChild(cOption);
+      const option=document.createElement('option'); 
+      option.value=ex; 
+      option.textContent=ex; 
+      optgroup.appendChild(option);
+      
+      const fOption=document.createElement('option'); 
+      fOption.value=ex; 
+      fOption.textContent=ex; 
+      filterExercise.appendChild(fOption);
+      
+      const cOption=document.createElement('option'); 
+      cOption.value=ex; 
+      cOption.textContent=ex; 
+      chartExerciseSelect.appendChild(cOption);
     });
     exerciseSelect.appendChild(optgroup);
   }
@@ -46,13 +61,36 @@ function populateExerciseSelect(){
 // Save/load from backend
 const API_BASE = 'https://gym-tracker-rmhb.onrender.com';
 
+async function loadExercises() {
+  console.log('Loading exercises from backend...');
+  try {
+    const res = await fetch(`${API_BASE}/api/exercises`);
+    exercises = await res.json();
+    console.log('Loaded exercises from backend:', exercises);
+    populateExerciseSelect(); // Refresh exercise selects after loading
+  } catch (e) {
+    console.error('Failed to load exercises from backend', e);
+    // Fallback to default exercises
+    exercises = {
+      "Chest": ["Bench Press","Incline Dumbbell Press","Chest Fly"],
+      "Legs": ["Squat","Lunges","Leg Press"],
+      "Back": ["Deadlift","Pull-Ups","Barbell Row"],
+      "Shoulders": ["Overhead Press","Lateral Raise"],
+      "Arms": ["Bicep Curl","Tricep Pushdown"]
+    };
+    populateExerciseSelect();
+  }
+}
+
 async function loadData() {
   console.log('Calling loadData()...');
   try {
+    // Load both exercises and workouts
+    await loadExercises();
     const res = await fetch(`${API_BASE}/api/workouts`);
-  workouts = await res.json();
-  console.log('Loaded workouts from backend:', workouts);
-  renderAll();
+    workouts = await res.json();
+    console.log('Loaded workouts from backend:', workouts);
+    renderAll();
   } catch (e) {
     console.error('Failed to load workouts from backend', e);
   }
@@ -405,8 +443,7 @@ document.getElementById('import-csv').addEventListener('change', (e) => {
 });
 */
 // Init
-populateExerciseSelect();
-loadData();
+loadData(); // This will load exercises first, then workouts, and populate selects
 
 // PWA Notification
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').then(()=>console.log('SW Registered')); }
