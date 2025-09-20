@@ -237,6 +237,37 @@ async function appendWorkout(workout) {
 }
 
 
+// Add new exercise to Exercise List sheet
+app.post('/api/addExercise', async (req, res) => {
+  try {
+    console.log('POST /api/addExercise called with:', req.body);
+    const { exerciseName, muscleGroup, weeklyTarget } = req.body;
+    
+    if (!exerciseName || !muscleGroup) {
+      return res.status(400).json({ error: 'Exercise name and muscle group are required' });
+    }
+    
+    const client = await auth.getClient();
+    
+    // Append new exercise to Exercise List sheet
+    const result = await sheets.spreadsheets.values.append({
+      auth: client,
+      spreadsheetId: SPREADSHEET_ID,
+      range: 'Exercise List!A:C',
+      valueInputOption: 'RAW',
+      requestBody: {
+        values: [[exerciseName, muscleGroup, weeklyTarget || 1]]
+      }
+    });
+    
+    console.log('Successfully added exercise to sheet:', result.data);
+    res.json({ success: true, message: 'Exercise added successfully' });
+  } catch (e) {
+    console.error('Error adding exercise:', e);
+    res.status(500).json({ error: 'Failed to add exercise', details: e.message });
+  }
+});
+
 // Get all exercises
 app.get('/api/exercises', async (req, res) => {
   try {

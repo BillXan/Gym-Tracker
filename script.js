@@ -151,17 +151,19 @@ async function loadData() {
   }
 }
 
-  // Infer muscle group from exercise name
-  function inferGroup(exName) {
-  const name = exName.toLowerCase();
-  console.log('[CreativeWorkout] inferring group for:', exName);
-  if (name.match(/bench|chest|fly|pec/)) { console.log('[CreativeWorkout] inferred Chest'); return 'Chest'; }
-  if (name.match(/squat|lunge|leg press|calf|quad|hamstring/)) { console.log('[CreativeWorkout] inferred Legs'); return 'Legs'; }
-  if (name.match(/deadlift|pull-up|row|lat|back/)) { console.log('[CreativeWorkout] inferred Back'); return 'Back'; }
-  if (name.match(/press|shoulder|raise|shrug/)) { console.log('[CreativeWorkout] inferred Shoulders'); return 'Shoulders'; }
-  if (name.match(/curl|tricep|bicep|arm/)) { console.log('[CreativeWorkout] inferred Arms'); return 'Arms'; }
-  console.log('[CreativeWorkout] inferred Other');
-  return 'Other';
+  // Get muscle group from loaded exercises data (consistent with Exercise List sheet)
+  function getExerciseGroup(exName) {
+    console.log('[CreativeWorkout] looking up group for:', exName);
+    // Search through all exercise groups to find which group contains this exercise
+    for (const group in exercises) {
+      if (exercises[group].includes(exName)) {
+        console.log('[CreativeWorkout] found', exName, 'in group', group);
+        return group;
+      }
+    }
+    // Fallback if exercise not found in loaded list
+    console.log('[CreativeWorkout] exercise not found in loaded list, defaulting to Other');
+    return 'Other';
   }
 
   // Creative Today's Workout Generator using backend data
@@ -178,11 +180,11 @@ async function loadData() {
     // Find completed exercises for today
     const completed = new Set(workouts.filter(w => w.date === today).map(w => w.exercise));
     console.log('[CreativeWorkout] Completed today:', Array.from(completed));
-    // Group uncompleted exercises by inferred group
+    // Group uncompleted exercises by their defined group from Exercise List
     const pool = {};
     allExercises.forEach(ex => {
       if (!completed.has(ex)) {
-        const group = inferGroup(ex);
+        const group = getExerciseGroup(ex);
         console.log('[CreativeWorkout] Adding', ex, 'to group', group);
         if (!pool[group]) pool[group] = [];
         pool[group].push(ex);
@@ -402,6 +404,83 @@ function renderChart(){
 }
 
 function renderAll(filter=null){ renderLog(filter); renderChecklist(); renderChart(); renderTodaysCreativeWorkout(); }
+
+// Add new exercise functionality
+async function addNewExercise(exerciseName, muscleGroup, weeklyTarget) {
+  try {
+    console.log('Adding new exercise:', { exerciseName, muscleGroup, weeklyTarget });
+    const response = await fetch(`${API_BASE}/api/addExercise`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        exerciseName: exerciseName,
+        muscleGroup: muscleGroup,
+        weeklyTarget: weeklyTarget
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log('Exercise added successfully:', result);
+    
+    // Reload exercises to update the dropdown
+    await loadExercises();
+    
+    return true;
+  } catch (e) {
+    console.error('Failed to add exercise:', e);
+    alert('Failed to add exercise: ' + e.message);
+    return false;
+  }
+}
+
+// Modal functionality
+function showExerciseModal() {
+  document.getElementById('exercise-modal').style.display = 'block';
+}
+
+function hideExerciseModal() {
+  document.getElementById('exercise-modal').style.display = 'none';
+  // Clear form
+  document.getElementById('new-exercise-form').reset();
+}
+
+// Event listeners for new exercise functionality
+document.getElementById('add-exercise-btn').addEventListener('click', showExerciseModal);
+document.getElementById('cancel-exercise').addEventListener('click', hideExerciseModal);
+
+// Handle new exercise form submission
+document.getElementById('new-exercise-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const exerciseName = document.getElementById('new-exercise-name').value.trim();
+  const muscleGroup = document.getElementById('new-muscle-group').value.trim();
+  const weeklyTarget = parseInt(document.getElementById('new-weekly-target').value) || 1;
+  
+  if (!exerciseName || !muscleGroup) {
+    alert('Please fill in exercise name and muscle group');
+    return;
+  }
+  
+  const success = await addNewExercise(exerciseName, muscleGroup, weeklyTarget);
+  if (success) {
+    hideExerciseModal();
+    // Select the newly added exercise
+    const exerciseSelect = document.getElementById('exercise');
+    exerciseSelect.value = exerciseName;
+    alert('Exercise added successfully!');
+  }
+});
+
+// Close modal when clicking outside
+document.getElementById('exercise-modal').addEventListener('click', (e) => {
+  if (e.target.id === 'exercise-modal') {
+    hideExerciseModal();
+  }
+});
 
 // Event listeners
 form.addEventListener('submit',async e=>{
