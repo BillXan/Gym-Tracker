@@ -93,43 +93,60 @@ async function loadExercises() {
   console.log('Loading exercises from Exercise List sheet...');
   try {
     const client = await auth.getClient();
+    console.log('Got authenticated client for exercises');
+    
     const res = await sheets.spreadsheets.values.get({
       auth: client,
       spreadsheetId: SPREADSHEET_ID,
       range: 'Exercise List!A2:C', // Assumes columns: Exercise Name, Muscle Group, Weekly Target
     });
+    console.log('Raw response from Exercise List sheet:', JSON.stringify(res.data, null, 2));
+    
     const rows = res.data.values || [];
     console.log('Loaded exercise rows:', rows);
+    console.log('Number of exercise rows:', rows.length);
     
     // Group exercises by muscle group and collect weekly targets
     const exercisesByGroup = {};
     const weeklyTargets = {};
     
-    rows.forEach(row => {
+    rows.forEach((row, index) => {
+      console.log(`Processing row ${index}:`, row);
       const exerciseName = row[0] || '';
       const muscleGroup = row[1] || 'Other';
       const weeklyTarget = parseInt(row[2]) || 1; // Default to 1 if not specified
       
+      console.log(`Row ${index}: name="${exerciseName}", group="${muscleGroup}", target=${weeklyTarget}`);
+      
       if (exerciseName.trim()) {
         if (!exercisesByGroup[muscleGroup]) {
           exercisesByGroup[muscleGroup] = [];
+          console.log(`Created new group: ${muscleGroup}`);
         }
         exercisesByGroup[muscleGroup].push(exerciseName);
         weeklyTargets[exerciseName] = weeklyTarget;
+        console.log(`Added ${exerciseName} to ${muscleGroup} with target ${weeklyTarget}`);
+      } else {
+        console.log(`Row ${index}: Skipped empty exercise name`);
       }
     });
     
-    console.log('Grouped exercises:', exercisesByGroup);
-    console.log('Weekly targets:', weeklyTargets);
+    console.log('Final grouped exercises:', exercisesByGroup);
+    console.log('Final weekly targets:', weeklyTargets);
     
-    return {
+    const result = {
       exercises: exercisesByGroup,
       weeklyTargets: weeklyTargets
     };
+    console.log('Returning exercises data:', JSON.stringify(result, null, 2));
+    return result;
   } catch (err) {
     console.error('Error loading exercises from Google Sheets:', err);
+    console.error('Error details:', err.message);
+    console.error('Error stack:', err.stack);
+    
     // Return default exercises if sheet doesn't exist or has errors
-    return {
+    const defaultResult = {
       exercises: {
         "Chest": ["Bench Press", "Incline Dumbbell Press", "Chest Fly"],
         "Legs": ["Squat", "Lunges", "Leg Press"],
@@ -141,6 +158,8 @@ async function loadExercises() {
         "Bench Press":2,"Incline Dumbbell Press":1,"Chest Fly":1,"Squat":2,"Lunges":1,"Leg Press":1,"Deadlift":1,"Pull-Ups":2,"Barbell Row":1,"Overhead Press":2,"Lateral Raise":1,"Bicep Curl":2,"Tricep Pushdown":1
       }
     };
+    console.log('Using default exercises due to error:', JSON.stringify(defaultResult, null, 2));
+    return defaultResult;
   }
 }
 
@@ -229,9 +248,12 @@ async function appendWorkout(workout) {
 // Get all exercises
 app.get('/api/exercises', async (req, res) => {
   try {
+    console.log('GET /api/exercises endpoint called');
     const exercises = await loadExercises();
+    console.log('Loaded exercises data:', JSON.stringify(exercises, null, 2));
     res.json(exercises);
   } catch (e) {
+    console.error('Error in GET /api/exercises:', e);
     res.status(500).json({ error: 'Failed to load exercises' });
   }
 });

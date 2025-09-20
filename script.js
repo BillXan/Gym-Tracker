@@ -25,6 +25,10 @@ let weeklyTargets = {}; // Will be loaded from backend
 
 // Populate selects
 function populateExerciseSelect(){
+  console.log('populateExerciseSelect called');
+  console.log('Current exercises object:', exercises);
+  console.log('Exercises keys:', Object.keys(exercises));
+  
   exerciseSelect.innerHTML=''; 
   filterExercise.innerHTML='<option value="">All Exercises</option>'; 
   chartExerciseSelect.innerHTML='<option value="">All Exercises</option>';
@@ -36,9 +40,11 @@ function populateExerciseSelect(){
   }
   
   for(const group in exercises){
+    console.log(`Processing group: ${group}, exercises:`, exercises[group]);
     const optgroup=document.createElement('optgroup'); 
     optgroup.label=group;
     exercises[group].forEach(ex=>{
+      console.log(`Adding exercise: ${ex} to group: ${group}`);
       const option=document.createElement('option'); 
       option.value=ex; 
       option.textContent=ex; 
@@ -55,7 +61,9 @@ function populateExerciseSelect(){
       chartExerciseSelect.appendChild(cOption);
     });
     exerciseSelect.appendChild(optgroup);
+    console.log(`Added optgroup for ${group} with ${exercises[group].length} exercises`);
   }
+  console.log('populateExerciseSelect completed');
 }
 
 // Save/load from backend
@@ -64,16 +72,46 @@ const API_BASE = 'https://gym-tracker-rmhb.onrender.com';
 async function loadExercises() {
   console.log('Loading exercises from backend...');
   try {
+    console.log('Fetching from:', `${API_BASE}/api/exercises`);
     const res = await fetch(`${API_BASE}/api/exercises`);
+    console.log('Response status:', res.status);
+    console.log('Response ok:', res.ok);
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    
     const data = await res.json();
-    exercises = data.exercises;
-    weeklyTargets = data.weeklyTargets;
-    console.log('Loaded exercises from backend:', exercises);
-    console.log('Loaded weekly targets from backend:', weeklyTargets);
+    console.log('Raw data received from backend:', data);
+    console.log('Data type:', typeof data);
+    console.log('Data structure:', JSON.stringify(data, null, 2));
+    
+    if (data.exercises) {
+      exercises = data.exercises;
+      console.log('Set exercises to:', exercises);
+    } else {
+      console.error('No exercises property in response data');
+      exercises = data; // Fallback in case structure is different
+    }
+    
+    if (data.weeklyTargets) {
+      weeklyTargets = data.weeklyTargets;
+      console.log('Set weeklyTargets to:', weeklyTargets);
+    } else {
+      console.error('No weeklyTargets property in response data');
+    }
+    
+    console.log('Final exercises object:', exercises);
+    console.log('Final weeklyTargets object:', weeklyTargets);
+    
     populateExerciseSelect(); // Refresh exercise selects after loading
   } catch (e) {
     console.error('Failed to load exercises from backend', e);
+    console.error('Error message:', e.message);
+    console.error('Error stack:', e.stack);
+    
     // Fallback to default exercises
+    console.log('Using fallback exercises');
     exercises = {
       "Chest": ["Bench Press","Incline Dumbbell Press","Chest Fly"],
       "Legs": ["Squat","Lunges","Leg Press"],
@@ -84,21 +122,34 @@ async function loadExercises() {
     weeklyTargets = {
       "Bench Press":2,"Incline Dumbbell Press":1,"Chest Fly":1,"Squat":2,"Lunges":1,"Leg Press":1,"Deadlift":1,"Pull-Ups":2,"Barbell Row":1,"Overhead Press":2,"Lateral Raise":1,"Bicep Curl":2,"Tricep Pushdown":1
     };
+    console.log('Fallback exercises set:', exercises);
+    console.log('Fallback weeklyTargets set:', weeklyTargets);
     populateExerciseSelect();
   }
 }
 
 async function loadData() {
-  console.log('Calling loadData()...');
+  console.log('=== Starting loadData() ===');
   try {
     // Load both exercises and workouts
+    console.log('About to call loadExercises()');
     await loadExercises();
+    console.log('loadExercises() completed');
+    
+    console.log('About to fetch workouts from:', `${API_BASE}/api/workouts`);
     const res = await fetch(`${API_BASE}/api/workouts`);
+    console.log('Workouts response status:', res.status);
+    
     workouts = await res.json();
     console.log('Loaded workouts from backend:', workouts);
+    console.log('Number of workouts:', workouts.length);
+    
+    console.log('About to call renderAll()');
     renderAll();
+    console.log('=== loadData() completed successfully ===');
   } catch (e) {
-    console.error('Failed to load workouts from backend', e);
+    console.error('Failed to load data:', e);
+    console.error('Error in loadData():', e.message);
   }
 }
 
