@@ -145,21 +145,13 @@ async function loadExercises() {
     console.error('Error details:', err.message);
     console.error('Error stack:', err.stack);
     
-    // Return default exercises if sheet doesn't exist or has errors
-    const defaultResult = {
-      exercises: {
-        "Chest": ["Bench Press", "Incline Dumbbell Press", "Chest Fly"],
-        "Legs": ["Squat", "Lunges", "Leg Press"],
-        "Back": ["Deadlift", "Pull-Ups", "Barbell Row"],
-        "Shoulders": ["Overhead Press", "Lateral Raise"],
-        "Arms": ["Bicep Curl", "Tricep Pushdown"]
-      },
-      weeklyTargets: {
-        "Bench Press":2,"Incline Dumbbell Press":1,"Chest Fly":1,"Squat":2,"Lunges":1,"Leg Press":1,"Deadlift":1,"Pull-Ups":2,"Barbell Row":1,"Overhead Press":2,"Lateral Raise":1,"Bicep Curl":2,"Tricep Pushdown":1
-      }
+    // Return empty structure if sheet doesn't exist or has errors
+    const emptyResult = {
+      exercises: {},
+      weeklyTargets: {}
     };
-    console.log('Using default exercises due to error:', JSON.stringify(defaultResult, null, 2));
-    return defaultResult;
+    console.log('Returning empty exercises due to error:', JSON.stringify(emptyResult, null, 2));
+    return emptyResult;
   }
 }
 

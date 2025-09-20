@@ -35,7 +35,13 @@ function populateExerciseSelect(){
   
   // Only populate if exercises are loaded
   if (!exercises || Object.keys(exercises).length === 0) {
-    console.log('No exercises loaded yet, skipping populate');
+    console.log('No exercises loaded from sheet - exercise selects will be empty');
+    // Add a placeholder option indicating no exercises are available
+    const placeholderOption = document.createElement('option');
+    placeholderOption.value = '';
+    placeholderOption.textContent = 'No exercises available - check Exercise List sheet';
+    placeholderOption.disabled = true;
+    exerciseSelect.appendChild(placeholderOption);
     return;
   }
   
@@ -110,20 +116,12 @@ async function loadExercises() {
     console.error('Error message:', e.message);
     console.error('Error stack:', e.stack);
     
-    // Fallback to default exercises
-    console.log('Using fallback exercises');
-    exercises = {
-      "Chest": ["Bench Press","Incline Dumbbell Press","Chest Fly"],
-      "Legs": ["Squat","Lunges","Leg Press"],
-      "Back": ["Deadlift","Pull-Ups","Barbell Row"],
-      "Shoulders": ["Overhead Press","Lateral Raise"],
-      "Arms": ["Bicep Curl","Tricep Pushdown"]
-    };
-    weeklyTargets = {
-      "Bench Press":2,"Incline Dumbbell Press":1,"Chest Fly":1,"Squat":2,"Lunges":1,"Leg Press":1,"Deadlift":1,"Pull-Ups":2,"Barbell Row":1,"Overhead Press":2,"Lateral Raise":1,"Bicep Curl":2,"Tricep Pushdown":1
-    };
-    console.log('Fallback exercises set:', exercises);
-    console.log('Fallback weeklyTargets set:', weeklyTargets);
+    // Set empty exercises if backend fails
+    console.log('Setting empty exercises due to backend failure');
+    exercises = {};
+    weeklyTargets = {};
+    console.log('Empty exercises set:', exercises);
+    console.log('Empty weeklyTargets set:', weeklyTargets);
     populateExerciseSelect();
   }
 }
