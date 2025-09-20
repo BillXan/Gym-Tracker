@@ -96,36 +96,50 @@ async function loadExercises() {
     const res = await sheets.spreadsheets.values.get({
       auth: client,
       spreadsheetId: SPREADSHEET_ID,
-      range: 'Exercise List!A2:B', // Assumes columns: Exercise Name, Muscle Group
+      range: 'Exercise List!A2:C', // Assumes columns: Exercise Name, Muscle Group, Weekly Target
     });
     const rows = res.data.values || [];
     console.log('Loaded exercise rows:', rows);
     
-    // Group exercises by muscle group
+    // Group exercises by muscle group and collect weekly targets
     const exercisesByGroup = {};
+    const weeklyTargets = {};
+    
     rows.forEach(row => {
       const exerciseName = row[0] || '';
       const muscleGroup = row[1] || 'Other';
+      const weeklyTarget = parseInt(row[2]) || 1; // Default to 1 if not specified
       
       if (exerciseName.trim()) {
         if (!exercisesByGroup[muscleGroup]) {
           exercisesByGroup[muscleGroup] = [];
         }
         exercisesByGroup[muscleGroup].push(exerciseName);
+        weeklyTargets[exerciseName] = weeklyTarget;
       }
     });
     
     console.log('Grouped exercises:', exercisesByGroup);
-    return exercisesByGroup;
+    console.log('Weekly targets:', weeklyTargets);
+    
+    return {
+      exercises: exercisesByGroup,
+      weeklyTargets: weeklyTargets
+    };
   } catch (err) {
     console.error('Error loading exercises from Google Sheets:', err);
     // Return default exercises if sheet doesn't exist or has errors
     return {
-      "Chest": ["Bench Press", "Incline Dumbbell Press", "Chest Fly"],
-      "Legs": ["Squat", "Lunges", "Leg Press"],
-      "Back": ["Deadlift", "Pull-Ups", "Barbell Row"],
-      "Shoulders": ["Overhead Press", "Lateral Raise"],
-      "Arms": ["Bicep Curl", "Tricep Pushdown"]
+      exercises: {
+        "Chest": ["Bench Press", "Incline Dumbbell Press", "Chest Fly"],
+        "Legs": ["Squat", "Lunges", "Leg Press"],
+        "Back": ["Deadlift", "Pull-Ups", "Barbell Row"],
+        "Shoulders": ["Overhead Press", "Lateral Raise"],
+        "Arms": ["Bicep Curl", "Tricep Pushdown"]
+      },
+      weeklyTargets: {
+        "Bench Press":2,"Incline Dumbbell Press":1,"Chest Fly":1,"Squat":2,"Lunges":1,"Leg Press":1,"Deadlift":1,"Pull-Ups":2,"Barbell Row":1,"Overhead Press":2,"Lateral Raise":1,"Bicep Curl":2,"Tricep Pushdown":1
+      }
     };
   }
 }

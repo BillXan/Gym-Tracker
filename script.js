@@ -19,9 +19,9 @@ let workouts = [];
 let exercises = {}; // Will be loaded from backend
 let chart;
 
-// Exercises will be loaded from backend
+// Exercises and weekly targets will be loaded from backend
 const groupIcons = {"Chest":"🫀","Legs":"🦿","Back":"🏋️‍♂️","Shoulders":"🤼‍♂️","Arms":"💪"};
-const weeklyTargets = {"Bench Press":2,"Incline Dumbbell Press":1,"Chest Fly":1,"Squat":2,"Lunges":1,"Leg Press":1,"Deadlift":1,"Pull-Ups":2,"Barbell Row":1,"Overhead Press":2,"Lateral Raise":1,"Bicep Curl":2,"Tricep Pushdown":1};
+let weeklyTargets = {}; // Will be loaded from backend
 
 // Populate selects
 function populateExerciseSelect(){
@@ -65,8 +65,11 @@ async function loadExercises() {
   console.log('Loading exercises from backend...');
   try {
     const res = await fetch(`${API_BASE}/api/exercises`);
-    exercises = await res.json();
+    const data = await res.json();
+    exercises = data.exercises;
+    weeklyTargets = data.weeklyTargets;
     console.log('Loaded exercises from backend:', exercises);
+    console.log('Loaded weekly targets from backend:', weeklyTargets);
     populateExerciseSelect(); // Refresh exercise selects after loading
   } catch (e) {
     console.error('Failed to load exercises from backend', e);
@@ -77,6 +80,9 @@ async function loadExercises() {
       "Back": ["Deadlift","Pull-Ups","Barbell Row"],
       "Shoulders": ["Overhead Press","Lateral Raise"],
       "Arms": ["Bicep Curl","Tricep Pushdown"]
+    };
+    weeklyTargets = {
+      "Bench Press":2,"Incline Dumbbell Press":1,"Chest Fly":1,"Squat":2,"Lunges":1,"Leg Press":1,"Deadlift":1,"Pull-Ups":2,"Barbell Row":1,"Overhead Press":2,"Lateral Raise":1,"Bicep Curl":2,"Tricep Pushdown":1
     };
     populateExerciseSelect();
   }
