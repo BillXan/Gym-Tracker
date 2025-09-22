@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Gym Bro</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ff7f50'><path d='M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z'/></svg>">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 <link rel="manifest" href="manifest.json">
@@ -13,27 +14,42 @@
 <div class="container">
 
 
-<h1>🏋️ Gym Bro</h1>
+<h1><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#ff7f50" style="vertical-align: middle; margin-right: 8px;"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/></svg>Gym Bro</h1>
 <div style="display: flex; gap: 24px; align-items: flex-start; margin-bottom: 2em; flex-wrap: wrap;">
   <div style="flex:1; min-width:320px; background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:flex; flex-direction:column;">
     <h2 style="margin-top:0;">Add Exercise</h2>
-    <form id="workout-form" style="margin-bottom:0;">
-      <label for="date">Date:</label>
-      <input type="date" id="date" required />
-      <label for="exercise">Exercise:</label>
-      <div style="display: flex; gap: 5px; align-items: center;">
-        <select id="exercise" required style="flex: 1;">
-          <option value="">Select Exercise</option>
-        </select>
-        <button type="button" id="add-exercise-btn" style="padding: 8px 12px; background: #28a745; border: none; border-radius: 4px; color: white; cursor: pointer;" title="Add New Exercise">+</button>
+    <form id="workout-form" style="margin-bottom:0; display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <label for="date" style="min-width: 100px;">Date:</label>
+        <input type="date" id="date" required style="flex: 1;" />
       </div>
-      <label for="weight">Weight (kg):</label>
-      <input type="number" id="weight" placeholder="Weight (kg)" required />
-      <label for="reps">Reps:</label>
-      <input type="number" id="reps" placeholder="Reps" required />
-      <label for="notes">Notes:</label>
-      <textarea id="notes" placeholder="Notes (optional)"></textarea>
-      <button type="submit">Add</button>
+      
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <label for="exercise" style="min-width: 100px;">Exercise:</label>
+        <div style="display: flex; gap: 5px; align-items: center; flex: 1;">
+          <select id="exercise" required style="flex: 1;">
+            <option value="">Select Exercise</option>
+          </select>
+          <button type="button" id="add-exercise-btn" style="padding: 8px 12px; background: #28a745; border: none; border-radius: 4px; color: white; cursor: pointer;" title="Add New Exercise">+</button>
+        </div>
+      </div>
+      
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <label for="weight" style="min-width: 100px;">Weight (kg):</label>
+        <input type="number" id="weight" placeholder="Weight (kg)" required style="flex: 1;" />
+      </div>
+      
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <label for="reps" style="min-width: 100px;">Reps:</label>
+        <input type="number" id="reps" placeholder="Reps" required style="flex: 1;" />
+      </div>
+      
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <label for="notes" style="min-width: 100px;">Notes:</label>
+        <textarea id="notes" placeholder="Notes (optional)" style="flex: 1; height: 32px !important; min-height: 32px !important; max-height: 32px !important; resize: none; padding: 8px; box-sizing: border-box;"></textarea>
+      </div>
+      
+      <button type="submit" style="margin-top: 10px;">Add</button>
     </form>
   </div>
   <div id="creative-workout" style="flex:1; min-width:320px; background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:flex; flex-direction:column;">
@@ -98,14 +114,20 @@
   <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #24262f; padding: 20px; border-radius: 12px; min-width: 300px;">
     <h3 style="margin-top: 0; color: white;">Add New Exercise</h3>
     <form id="new-exercise-form">
-      <label for="new-exercise-name" style="color: white;">Exercise Name:</label>
-      <input type="text" id="new-exercise-name" required style="width: 100%; margin-bottom: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" placeholder="e.g., Bicep Curl" />
+      <div style="display: flex; align-items: center; margin-bottom: 10px; gap: 10px;">
+        <label for="new-exercise-name" style="color: white; min-width: 120px;">Exercise Name:</label>
+        <input type="text" id="new-exercise-name" required style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" placeholder="e.g., Bicep Curl" />
+      </div>
       
-      <label for="new-muscle-group" style="color: white;">Muscle Group:</label>
-      <input type="text" id="new-muscle-group" required style="width: 100%; margin-bottom: 10px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" placeholder="e.g., Arms" />
+      <div style="display: flex; align-items: center; margin-bottom: 10px; gap: 10px;">
+        <label for="new-muscle-group" style="color: white; min-width: 120px;">Muscle Group:</label>
+        <input type="text" id="new-muscle-group" required style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" placeholder="e.g., Arms" />
+      </div>
       
-      <label for="new-weekly-target" style="color: white;">Weekly Target:</label>
-      <input type="number" id="new-weekly-target" min="1" value="1" style="width: 100%; margin-bottom: 15px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" />
+      <div style="display: flex; align-items: center; margin-bottom: 15px; gap: 10px;">
+        <label for="new-weekly-target" style="color: white; min-width: 120px;">Weekly Target:</label>
+        <input type="number" id="new-weekly-target" min="1" value="1" style="flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px;" />
+      </div>
       
       <div style="display: flex; gap: 10px; justify-content: flex-end;">
         <button type="button" id="cancel-exercise" style="padding: 8px 16px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
