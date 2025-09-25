@@ -169,7 +169,9 @@ async function loadData() {
   // Creative Today's Workout Generator using backend data
   function getTodaysCreativeWorkout() {
     const today = new Date().toISOString().slice(0, 10);
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     console.log('[CreativeWorkout] Today:', today);
+    console.log('[CreativeWorkout] Yesterday:', yesterday);
     console.log('[CreativeWorkout] Workouts array:', workouts);
     // Use all exercises from the weekly checklist
     const allExercises = [];
@@ -177,19 +179,26 @@ async function loadData() {
       exercises[group].forEach(ex => allExercises.push(ex));
     }
     console.log('[CreativeWorkout] All exercises from weekly checklist:', allExercises);
-    // Find completed exercises for today
-    const completed = new Set(workouts.filter(w => w.date === today).map(w => w.exercise));
-    console.log('[CreativeWorkout] Completed today:', Array.from(completed));
+    // Find completed exercises for today and yesterday
+    const completedToday = new Set(workouts.filter(w => w.date === today).map(w => w.exercise));
+    const completedYesterday = new Set(workouts.filter(w => w.date === yesterday).map(w => w.exercise));
+    console.log('[CreativeWorkout] Completed today:', Array.from(completedToday));
+    console.log('[CreativeWorkout] Completed yesterday:', Array.from(completedYesterday));
     // Group uncompleted exercises by their defined group from Exercise List
     const pool = {};
     allExercises.forEach(ex => {
-      if (!completed.has(ex)) {
+      if (!completedToday.has(ex) && !completedYesterday.has(ex)) {
         const group = getExerciseGroup(ex);
         console.log('[CreativeWorkout] Adding', ex, 'to group', group);
         if (!pool[group]) pool[group] = [];
         pool[group].push(ex);
       } else {
-        console.log('[CreativeWorkout] Skipping completed exercise:', ex);
+        if (completedToday.has(ex)) {
+          console.log('[CreativeWorkout] Skipping exercise completed today:', ex);
+        }
+        if (completedYesterday.has(ex)) {
+          console.log('[CreativeWorkout] Skipping exercise completed yesterday:', ex);
+        }
       }
     });
     console.log('[CreativeWorkout] Pool of uncompleted exercises by group:', pool);
@@ -201,10 +210,11 @@ async function loadData() {
       [groups[i], groups[j]] = [groups[j], groups[i]];
     }
     console.log('[CreativeWorkout] Groups after shuffle:', groups);
-    // Build workout list, alternating groups
+    // Build workout list, alternating groups, limited to max 8 exercises
     const result = [];
     let lastGroup = null;
-    while (groups.length > 0) {
+    const maxExercises = 8;
+    while (groups.length > 0 && result.length < maxExercises) {
       let idx = groups.findIndex(g => g !== lastGroup);
       if (idx === -1) idx = 0;
       const group = groups[idx];
@@ -220,7 +230,7 @@ async function loadData() {
         groups.splice(idx, 1);
       }
     }
-    console.log('[CreativeWorkout] Final generated list:', result);
+    console.log('[CreativeWorkout] Final generated list (max 8):', result);
     return result;
   }
 
