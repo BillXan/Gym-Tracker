@@ -292,7 +292,7 @@ function getWeekString(date){ const d=new Date(date),y=d.getFullYear(); const w=
 
 // Render functions
 function renderLog(filter=null){
-  // Completely reprogrammed workout log rendering
+  // Completely reprogrammed rendering
   logTable.innerHTML = '';
   // Add header row
   const header = document.createElement('tr');
@@ -300,7 +300,12 @@ function renderLog(filter=null){
   logTable.appendChild(header);
 
   let data = workouts;
-  if (filter) {
+  
+  // Default filter: only show today's workouts if no filter is provided
+  const today = new Date().toISOString().slice(0, 10);
+  if (!filter) {
+    data = data.filter(w => w.date === today);
+  } else {
     data = data.filter(w => {
       if (filter.exercise && w.exercise !== filter.exercise) return false;
       if (filter.start && w.date < filter.start) return false;
@@ -492,7 +497,40 @@ document.getElementById('exercise-modal').addEventListener('click', (e) => {
   }
 });
 
+// Auto-fill function for exercise selection
+function autoFillExerciseStats() {
+  const selectedExercise = exerciseSelect.value;
+  if (!selectedExercise) {
+    // Clear fields if no exercise selected
+    document.getElementById('weight').value = '';
+    document.getElementById('reps').value = '';
+    return;
+  }
+
+  // Find the most recent workout for this exercise
+  const exerciseWorkouts = workouts
+    .filter(w => w.exercise === selectedExercise)
+    .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date descending
+
+  if (exerciseWorkouts.length > 0) {
+    const lastWorkout = exerciseWorkouts[0];
+    document.getElementById('weight').value = lastWorkout.weight || '';
+    document.getElementById('reps').value = lastWorkout.reps || '';
+    console.log('Auto-filled stats for', selectedExercise, ':', {
+      weight: lastWorkout.weight,
+      reps: lastWorkout.reps,
+      lastDate: lastWorkout.date
+    });
+  } else {
+    // Clear fields if no previous workouts found
+    document.getElementById('weight').value = '';
+    document.getElementById('reps').value = '';
+  }
+}
+
 // Event listeners
+exerciseSelect.addEventListener('change', autoFillExerciseStats);
+
 form.addEventListener('submit',async e=>{
   e.preventDefault();
   const workout={date:document.getElementById('date').value,exercise:exerciseSelect.value,weight:parseFloat(document.getElementById('weight').value),reps:parseInt(document.getElementById('reps').value),notes:document.getElementById('notes').value};
