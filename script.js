@@ -316,38 +316,141 @@ async function saveData() {
 }
 function getWeekString(date){ const d=new Date(date),y=d.getFullYear(); const w=Math.ceil((((d-new Date(y,0,1))/86400000)+new Date(y,0,1).getDay()+1)/7); return y+'-W'+w; }
 
+// Carousel state
+let currentLogDate = new Date().toISOString().slice(0, 10);
+
+// Get all unique dates with workouts
+function getWorkoutDates() {
+  const dates = [...new Set(workouts.map(w => w.date))].sort().reverse(); // Most recent first
+  if (dates.length === 0) {
+    return [new Date().toISOString().slice(0, 10)]; // Include today even if no workouts
+  }
+  // Include today if not already in the list
+  const today = new Date().toISOString().slice(0, 10);
+  if (!dates.includes(today)) {
+    dates.unshift(today);
+  }
+  return dates;
+}
+
+// Navigate carousel
+function navigateLogCarousel(direction) {
+  const dates = getWorkoutDates();
+  const currentIndex = dates.indexOf(currentLogDate);
+  
+  if (direction === 'prev' && currentIndex < dates.length - 1) {
+    currentLogDate = dates[currentIndex + 1];
+  } else if (direction === 'next' && currentIndex > 0) {
+    currentLogDate = dates[currentIndex - 1];
+  }
+  
+  renderLog();
+}
+
 // Render functions
 function renderLog(filter=null){
-  // Completely reprogrammed rendering
-  logTable.innerHTML = '';
-  // Add header row
-  const header = document.createElement('tr');
-  //header.innerHTML = '<th>Date</th><th>Exercise</th><th>Weight</th><th>Reps</th><th>Notes</th><th>Actions</th>';
-  logTable.appendChild(header);
-
-  let data = workouts;
+  // Use carousel date if no filter is provided
+  let targetDate = currentLogDate;
   
-  // Default filter: only show today's workouts if no filter is provided
-  const today = new Date().toISOString().slice(0, 10);
-  if (!filter) {
-    data = data.filter(w => w.date === today);
-  } else {
-    data = data.filter(w => {
+  // If filter is provided, use traditional filtering instead of carousel
+  if (filter) {
+    logTable.innerHTML = '';
+    // Add header row
+    const header = document.createElement('tr');
+    logTable.appendChild(header);
+
+    let data = workouts.filter(w => {
       if (filter.exercise && w.exercise !== filter.exercise) return false;
       if (filter.start && w.date < filter.start) return false;
       if (filter.end && w.date > filter.end) return false;
       return true;
     });
+
+    if (!Array.isArray(data) || data.length === 0) {
+      const row = document.createElement('tr');
+      row.innerHTML = '<td colspan="6">No workouts found for the selected filters.</td>';
+      logTable.appendChild(row);
+      return;
+    }
+
+    data.forEach((w, i) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${w.date || ''}</td>
+        <td>${w.exercise || ''}</td>
+        <td>${w.weight || ''}</td>
+        <td>${w.reps || ''}</td>
+        <td>${w.notes || ''}</td>
+        <td class="actions">
+          <button onclick="editWorkout(${i})">Edit</button>
+          <button onclick="deleteWorkout(${i})">Delete</button>
+        </td>
+      `;
+      logTable.appendChild(row);
+    });
+    return;
   }
 
-  if (!Array.isArray(data) || data.length === 0) {
+  // Carousel mode - show workouts for specific date
+  logTable.innerHTML = '';
+  
+  // Add date display row
+  const dateRow = document.createElement('tr');
+  dateRow.innerHTML = `
+    <td colspan="6" style="text-align: center; padding: 15px; background-color: #23262f; border-bottom: 1px solid #444; color: #fff; font-size: 1.3em; font-weight: 500;">
+      ${formatDateForDisplay(targetDate)}
+    </td>
+  `;
+  logTable.appendChild(dateRow);
+  
+  // Add carousel navigation controls (below date, above headers)
+  const navHeader = document.createElement('tr');
+  navHeader.innerHTML = `
+    <td colspan="6" style="text-align: center; padding: 10px; background-color: #23262f; border-bottom: 2px solid #23262f;">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+        <button onclick="navigateLogCarousel('prev')" style="padding: 5px 10px; background: #23262f; color: white; border: 1px solid white; border-color: #444; border-radius: 8px; cursor: pointer;">← Previous</button>
+        <span style="margin: 0; font-size: 1em;">Navigate</span>
+        <button onclick="navigateLogCarousel('next')" style="padding: 5px 10px; background: #23262f; color: white; border: 1px solid white; border-color: #444; border-radius: 8px; cursor: pointer;">Next →</button>
+      </div>
+      <div style="margin-top: 5px; font-size: 0.9em; color: #666;">
+        ${getCurrentDateInfo()}
+      </div>
+    </td>
+  `;
+  logTable.appendChild(navHeader);
+  
+  // Add table headers
+  const headerRow = document.createElement('tr');
+  headerRow.innerHTML = `
+    <th style="background-color: #23262f; color: #fff; padding: 10px; border-bottom: 1px solid #444;">Date</th>
+    <th style="background-color: #23262f; color: #fff; padding: 10px; border-bottom: 1px solid #444;">Exercise</th>
+    <th style="background-color: #23262f; color: #fff; padding: 10px; border-bottom: 1px solid #444;">Weight</th>
+    <th style="background-color: #23262f; color: #fff; padding: 10px; border-bottom: 1px solid #444;">Reps</th>
+    <th style="background-color: #23262f; color: #fff; padding: 10px; border-bottom: 1px solid #444;">Notes</th>
+    <th style="background-color: #23262f; color: #fff; padding: 10px; border-bottom: 1px solid #444;">Actions</th>
+  `;
+  logTable.appendChild(headerRow);
+
+  // Filter workouts for the current date
+  const data = workouts.filter(w => w.date === targetDate);
+
+  if (data.length === 0) {
     const row = document.createElement('tr');
-    row.innerHTML = '<td colspan="6">No workouts logged yet.</td>';
+    row.innerHTML = `<td colspan="6" style="text-align: center; padding: 20px; color: #666;">No workouts logged for ${formatDateForDisplay(targetDate)}</td>`;
     logTable.appendChild(row);
     return;
   }
 
-  data.forEach((w, i) => {
+  data.forEach((w) => {
+    // Find the original index in the workouts array for edit/delete functions
+    const originalIndex = workouts.findIndex(workout => 
+      workout.date === w.date && 
+      workout.exercise === w.exercise && 
+      workout.weight === w.weight && 
+      workout.reps === w.reps && 
+      workout.notes === w.notes
+    );
+    
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${w.date || ''}</td>
@@ -356,13 +459,139 @@ function renderLog(filter=null){
       <td>${w.reps || ''}</td>
       <td>${w.notes || ''}</td>
       <td class="actions">
-        <button onclick="editWorkout(${i})">Edit</button>
-        <button onclick="deleteWorkout(${i})">Delete</button>
+        <button onclick="editWorkout(${originalIndex})">Edit</button>
+        <button onclick="deleteWorkout(${originalIndex})">Delete</button>
       </td>
     `;
     logTable.appendChild(row);
   });
 }
+
+// Helper functions for carousel
+function formatDateForDisplay(dateString) {
+  const date = new Date(dateString + 'T00:00:00');
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  if (dateString === today.toISOString().slice(0, 10)) {
+    return 'Today (' + date.toLocaleDateString() + ')';
+  } else if (dateString === yesterday.toISOString().slice(0, 10)) {
+    return 'Yesterday (' + date.toLocaleDateString() + ')';
+  } else {
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  }
+}
+
+function getCurrentDateInfo() {
+  const dates = getWorkoutDates();
+  const currentIndex = dates.indexOf(currentLogDate);
+  return `Showing ${currentIndex + 1} of ${dates.length} days with workouts`;
+}
+
+// Touch/swipe functionality for carousel
+let touchStartX = 0;
+let touchEndX = 0;
+let touchStartY = 0;
+let touchEndY = 0;
+
+function handleTouchStart(e) {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}
+
+function handleTouchEnd(e) {
+  touchEndX = e.changedTouches[0].screenX;
+  touchEndY = e.changedTouches[0].screenY;
+  handleSwipe();
+}
+
+function handleSwipe() {
+  const swipeThreshold = 50; // Minimum distance for a swipe
+  const maxVerticalDistance = 100; // Maximum vertical movement to still count as horizontal swipe
+  
+  const horizontalDistance = touchEndX - touchStartX;
+  const verticalDistance = Math.abs(touchEndY - touchStartY);
+  
+  // Only trigger swipe if horizontal movement is significant and vertical movement is minimal
+  if (Math.abs(horizontalDistance) > swipeThreshold && verticalDistance < maxVerticalDistance) {
+    if (horizontalDistance > 0) {
+      // Swipe right - go to previous (older) date
+      navigateLogCarousel('prev');
+    } else {
+      // Swipe left - go to next (more recent) date
+      navigateLogCarousel('next');
+    }
+  }
+}
+
+// Mouse drag functionality for desktop
+let mouseStartX = 0;
+let mouseEndX = 0;
+let isDragging = false;
+
+function handleMouseDown(e) {
+  mouseStartX = e.clientX;
+  isDragging = true;
+  e.preventDefault(); // Prevent text selection
+}
+
+function handleMouseMove(e) {
+  if (!isDragging) return;
+  e.preventDefault();
+}
+
+function handleMouseUp(e) {
+  if (!isDragging) return;
+  
+  mouseEndX = e.clientX;
+  const dragDistance = mouseEndX - mouseStartX;
+  const dragThreshold = 50;
+  
+  if (Math.abs(dragDistance) > dragThreshold) {
+    if (dragDistance > 0) {
+      // Drag right - go to previous (older) date
+      navigateLogCarousel('prev');
+    } else {
+      // Drag left - go to next (more recent) date
+      navigateLogCarousel('next');
+    }
+  }
+  
+  isDragging = false;
+}
+
+// Add swipe listeners to the log table
+function addSwipeListeners() {
+  const logContainer = logTable.parentElement; // Get the table container
+  
+  // Touch events for mobile
+  logContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
+  logContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
+  
+  // Mouse events for desktop
+  logContainer.addEventListener('mousedown', handleMouseDown);
+  logContainer.addEventListener('mousemove', handleMouseMove);
+  logContainer.addEventListener('mouseup', handleMouseUp);
+  logContainer.addEventListener('mouseleave', () => { isDragging = false; }); // Stop dragging if mouse leaves area
+  
+  // Add some visual feedback
+  logContainer.style.cursor = 'grab';
+  logContainer.addEventListener('mousedown', () => {
+    logContainer.style.cursor = 'grabbing';
+  });
+  logContainer.addEventListener('mouseup', () => {
+    logContainer.style.cursor = 'grab';
+  });
+}
+
+// Make navigation functions global
+window.navigateLogCarousel = navigateLogCarousel;
 
 function renderChecklist(){
   checklistCarousel.innerHTML='';
@@ -653,6 +882,11 @@ document.getElementById('import-csv').addEventListener('change', (e) => {
 */
 // Init
 loadData(); // This will load exercises first, then workouts, and populate selects
+
+// Initialize swipe functionality after page loads
+document.addEventListener('DOMContentLoaded', () => {
+  addSwipeListeners();
+});
 
 // PWA Notification
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').then(()=>console.log('SW Registered')); }
