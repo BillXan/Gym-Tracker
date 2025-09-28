@@ -90,67 +90,67 @@ app.post('/api/deleteWorkout', async (req, res) => {
 
 // Load exercises from the "Exercise List" sheet
 async function loadExercises() {
-  console.log('Loading exercises from Exercise List sheet...');
+  //console.log('Loading exercises from Exercise List sheet...');
   try {
     const client = await auth.getClient();
-    console.log('Got authenticated client for exercises');
+    //console.log('Got authenticated client for exercises');
     
     const res = await sheets.spreadsheets.values.get({
       auth: client,
       spreadsheetId: SPREADSHEET_ID,
       range: 'Exercise List!A2:C', // Assumes columns: Exercise Name, Muscle Group, Weekly Target
     });
-    console.log('Raw response from Exercise List sheet:', JSON.stringify(res.data, null, 2));
+    //console.log('Raw response from Exercise List sheet:', JSON.stringify(res.data, null, 2));
     
     const rows = res.data.values || [];
-    console.log('Loaded exercise rows:', rows);
-    console.log('Number of exercise rows:', rows.length);
+    //console.log('Loaded exercise rows:', rows);
+    //console.log('Number of exercise rows:', rows.length);
     
     // Group exercises by muscle group and collect weekly targets
     const exercisesByGroup = {};
     const weeklyTargets = {};
     
     rows.forEach((row, index) => {
-      console.log(`Processing row ${index}:`, row);
+      //console.log(`Processing row ${index}:`, row);
       const exerciseName = row[0] || '';
       const muscleGroup = row[1] || 'Other';
       const weeklyTarget = parseInt(row[2]) || 1; // Default to 1 if not specified
       
-      console.log(`Row ${index}: name="${exerciseName}", group="${muscleGroup}", target=${weeklyTarget}`);
+      //console.log(`Row ${index}: name="${exerciseName}", group="${muscleGroup}", target=${weeklyTarget}`);
       
       if (exerciseName.trim()) {
         if (!exercisesByGroup[muscleGroup]) {
           exercisesByGroup[muscleGroup] = [];
-          console.log(`Created new group: ${muscleGroup}`);
+          //console.log(`Created new group: ${muscleGroup}`);
         }
         exercisesByGroup[muscleGroup].push(exerciseName);
         weeklyTargets[exerciseName] = weeklyTarget;
-        console.log(`Added ${exerciseName} to ${muscleGroup} with target ${weeklyTarget}`);
+        //console.log(`Added ${exerciseName} to ${muscleGroup} with target ${weeklyTarget}`);
       } else {
-        console.log(`Row ${index}: Skipped empty exercise name`);
+        //console.log(`Row ${index}: Skipped empty exercise name`);
       }
     });
     
-    console.log('Final grouped exercises:', exercisesByGroup);
-    console.log('Final weekly targets:', weeklyTargets);
+    //console.log('Final grouped exercises:', exercisesByGroup);
+    //console.log('Final weekly targets:', weeklyTargets);
     
     const result = {
       exercises: exercisesByGroup,
       weeklyTargets: weeklyTargets
     };
-    console.log('Returning exercises data:', JSON.stringify(result, null, 2));
+    //console.log('Returning exercises data:', JSON.stringify(result, null, 2));
     return result;
   } catch (err) {
-    console.error('Error loading exercises from Google Sheets:', err);
-    console.error('Error details:', err.message);
-    console.error('Error stack:', err.stack);
+    //console.error('Error loading exercises from Google Sheets:', err);
+    //console.error('Error details:', err.message);
+    //console.error('Error stack:', err.stack);
     
     // Return empty structure if sheet doesn't exist or has errors
     const emptyResult = {
       exercises: {},
       weeklyTargets: {}
     };
-    console.log('Returning empty exercises due to error:', JSON.stringify(emptyResult, null, 2));
+    //console.log('Returning empty exercises due to error:', JSON.stringify(emptyResult, null, 2));
     return emptyResult;
   }
 }
@@ -166,7 +166,7 @@ async function loadWorkouts() {
       range: 'Sheet1!A2:E', // Assumes header in row 1
     });
     const rows = res.data.values || [];
-    console.log('Loaded rows:', rows);
+    //console.log('Loaded rows:', rows);
     return rows.map(row => ({
       date: row[0] || '',
       exercise: row[1] || '',
@@ -183,7 +183,7 @@ async function loadWorkouts() {
 // Save all workouts to Google Sheets (overwrite)
 async function saveWorkouts(workouts) {
   console.log('Saving workouts to Google Sheets...');
-  console.log('Workouts:', workouts);
+  //console.log('Workouts:', workouts);
   const client = await auth.getClient();
   if (workouts.length === 0) {
     // Clear all rows below the header
@@ -194,12 +194,12 @@ async function saveWorkouts(workouts) {
       valueInputOption: 'RAW',
       requestBody: { values: [] }
     });
-    console.log('Sheet cleared:', clearResult.data);
+    //console.log('Sheet cleared:', clearResult.data);
     return;
   }
   // Overwrite with new data
   const values = workouts.map(w => [w.date, w.exercise, w.weight, w.reps, w.notes]);
-  console.log('Values to save:', values);
+  //console.log('Values to save:', values);
   const result = await sheets.spreadsheets.values.update({
     auth: client,
     spreadsheetId: SPREADSHEET_ID,
@@ -207,7 +207,7 @@ async function saveWorkouts(workouts) {
     valueInputOption: 'RAW',
     requestBody: { values }
   });
-  console.log('Save result:', result.data);
+  //console.log('Save result:', result.data);
 
   // Clear any rows below the last workout (in case sheet had more rows before)
   const clearStartRow = 2 + values.length;
@@ -219,7 +219,7 @@ async function saveWorkouts(workouts) {
     valueInputOption: 'RAW',
     requestBody: { values: [] }
   });
-  console.log('Cleared extra rows:', clearRange, clearResult.data);
+  //console.log('Cleared extra rows:', clearRange, clearResult.data);
 }
 
 // Append a single workout to Google Sheets

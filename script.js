@@ -254,6 +254,32 @@ async function loadData() {
     list.forEach(item => {
       const li = document.createElement('li');
       li.innerHTML = `<b>${item.exercise}</b> <span style="color:gray">(${item.group})</span>`;
+      li.style.cursor = 'pointer';
+      li.style.padding = '5px';
+      li.style.borderRadius = '3px';
+      li.style.transition = 'background-color 0.2s';
+      
+      // Add hover effect
+      li.addEventListener('mouseenter', () => {
+        li.style.backgroundColor = '#f0f0f0';
+      });
+      li.addEventListener('mouseleave', () => {
+        li.style.backgroundColor = '';
+      });
+      
+      // Add click handler to select exercise
+      li.addEventListener('click', () => {
+        console.log('Clicked on exercise:', item.exercise);
+        exerciseSelect.value = item.exercise;
+        // Trigger the auto-fill function
+        autoFillExerciseStats();
+        // Visual feedback
+        li.style.backgroundColor = '#d4edda';
+        setTimeout(() => {
+          li.style.backgroundColor = '';
+        }, 1000);
+      });
+      
       ul.appendChild(li);
     });
     // Fade out all previous items
@@ -516,6 +542,7 @@ function autoFillExerciseStats() {
     const lastWorkout = exerciseWorkouts[0];
     document.getElementById('weight').value = lastWorkout.weight || '';
     document.getElementById('reps').value = lastWorkout.reps || '';
+    document.getElementById('notes').value = lastWorkout.notes || '';
     console.log('Auto-filled stats for', selectedExercise, ':', {
       weight: lastWorkout.weight,
       reps: lastWorkout.reps,
