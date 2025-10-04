@@ -213,7 +213,7 @@ async function loadData() {
     // Build workout list, alternating groups, limited to max 8 exercises
     const result = [];
     let lastGroup = null;
-    const maxExercises = 8;
+    const maxExercises = 8 - completedToday.size; // Adjust max based on already completed today
     while (groups.length > 0 && result.length < maxExercises) {
       let idx = groups.findIndex(g => g !== lastGroup);
       if (idx === -1) idx = 0;
@@ -314,7 +314,22 @@ async function saveData() {
     console.error('Failed to save workouts to backend', e);
   }
 }
-function getWeekString(date){ const d=new Date(date),y=d.getFullYear(); const w=Math.ceil((((d-new Date(y,0,1))/86400000)+new Date(y,0,1).getDay()+1)/7); return y+'-W'+w; }
+function getWeekString(date){ 
+  const d = new Date(date);
+  
+  // Get Monday of the current week
+  const dayOfWeek = d.getDay(); // 0 = Sunday, 1 = Monday, etc.
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // If Sunday, go back 6 days, otherwise go back to Monday
+  const monday = new Date(d);
+  monday.setDate(d.getDate() + mondayOffset);
+  
+  // Format as YYYY-MM-DD for the Monday of this week
+  const year = monday.getFullYear();
+  const month = String(monday.getMonth() + 1).padStart(2, '0');
+  const day = String(monday.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+}
 
 // Carousel state
 let currentLogDate = new Date().toISOString().slice(0, 10);
