@@ -1015,12 +1015,24 @@ function renderQuickStats() {
   
   // Today's workouts count
   const todayWorkouts = workouts.filter(w => w.date === today).length;
+  const todayExercises = [...new Set(workouts.filter(w => w.date === today).map(w => w.exercise))];
   
   // This week's workouts count
   const weekWorkouts = workouts.filter(w => getWeekString(new Date(w.date)) === thisWeek).length;
   
   // Total workouts
   const totalWorkouts = workouts.length;
+  
+  // Calculate daily target based on weekly targets spread across 7 days
+  let dailyTargetExercises = 0;
+  for (const group in exercises) {
+    exercises[group].forEach(ex => {
+      const weeklyTarget = weeklyTargets[ex] || 1;
+      dailyTargetExercises += weeklyTarget / 7;
+    });
+  }
+  const expectedDailyExercises = Math.max(2, Math.ceil(dailyTargetExercises));
+  const todayProgress = Math.min(100, (todayExercises.length / expectedDailyExercises) * 100);
   
   // Weekly progress percentage
   let totalRequired = 0, totalDone = 0;
@@ -1032,14 +1044,17 @@ function renderQuickStats() {
       totalDone += Math.min(count, maxCount);
     });
   }
-  const weeklyProgress = totalRequired === 0 ? 0 : Math.round((totalDone / totalRequired) * 100);
+  const weeklyProgress = totalRequired === 0 ? 0 : (totalDone / totalRequired) * 100;
 
   quickStatsContainer.innerHTML = `
+    <!-- Progress Rings -->
+    <div style="display: flex; gap: 30px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 25px;">
+      ${createProgressRing(todayProgress, '#ff7f50', "Today's Goal")}
+      ${createProgressRing(weeklyProgress, '#28a745', 'Weekly Goal')}
+    </div>
+    
+    <!-- Quick Stats Grid -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px;">
-      <div style="text-align: center; padding: 15px; background: #1e2124; border-radius: 8px;">
-        <div style="font-size: 2em; color: #ff7f50; font-weight: bold;">${todayWorkouts}</div>
-        <div style="font-size: 0.9em; color: #ccc;">Today</div>
-      </div>
       <div style="text-align: center; padding: 15px; background: #1e2124; border-radius: 8px;">
         <div style="font-size: 2em; color: #28a745; font-weight: bold;">${weekWorkouts}</div>
         <div style="font-size: 0.9em; color: #ccc;">This Week</div>
@@ -1048,9 +1063,39 @@ function renderQuickStats() {
         <div style="font-size: 2em; color: #17a2b8; font-weight: bold;">${totalWorkouts}</div>
         <div style="font-size: 0.9em; color: #ccc;">Total</div>
       </div>
-      <div style="text-align: center; padding: 15px; background: #1e2124; border-radius: 8px;">
-        <div style="font-size: 2em; color: #ffc107; font-weight: bold;">${weeklyProgress}%</div>
-        <div style="font-size: 0.9em; color: #ccc;">Weekly Goal</div>
+    </div>
+  `;
+}
+
+// Progress Rings for Dashboard
+function createProgressRing(percentage, color, label, size = 120) {
+  const radius = (size - 16) / 2; // Account for stroke width
+  const circumference = 2 * Math.PI * radius;
+  const strokeDasharray = circumference;
+  const strokeDashoffset = circumference - (percentage / 100) * circumference;
+  
+  return `
+    <div class="progress-ring">
+      <svg width="${size}" height="${size}">
+        <circle
+          class="background-circle"
+          cx="${size / 2}"
+          cy="${size / 2}"
+          r="${radius}"
+        />
+        <circle
+          class="progress-circle"
+          cx="${size / 2}"
+          cy="${size / 2}"
+          r="${radius}"
+          stroke="${color}"
+          stroke-dasharray="${strokeDasharray}"
+          stroke-dashoffset="${strokeDashoffset}"
+        />
+      </svg>
+      <div class="progress-text">
+        <span class="percentage" style="color: ${color};">${Math.round(percentage)}%</span>
+        <span class="label">${label}</span>
       </div>
     </div>
   `;
