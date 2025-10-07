@@ -267,12 +267,28 @@ async function loadData() {
         li.style.backgroundColor = '';
       });
       
-      // Add click handler to select exercise
+      // Add click handler to select exercise and navigate to log workout page
       li.addEventListener('click', () => {
         console.log('Clicked on exercise:', item.exercise);
+        
+        // Navigate to log workout page
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const pages = document.querySelectorAll('.page');
+        
+        // Remove active class from all tabs and pages
+        navTabs.forEach(t => t.classList.remove('active'));
+        pages.forEach(p => p.classList.remove('active'));
+        
+        // Activate log workout tab and page
+        const logWorkoutTab = document.querySelector('[data-page="log-workout"]');
+        const logWorkoutPage = document.getElementById('log-workout');
+        if (logWorkoutTab) logWorkoutTab.classList.add('active');
+        if (logWorkoutPage) logWorkoutPage.classList.add('active');
+        
+        // Fill in the exercise and trigger auto-fill
         exerciseSelect.value = item.exercise;
-        // Trigger the auto-fill function
         autoFillExerciseStats();
+        
         // Visual feedback
         li.style.backgroundColor = '#d4edda';
         setTimeout(() => {
@@ -644,7 +660,52 @@ function renderChecklist(){
       const count=workouts.filter(w=>w.exercise===ex && getWeekString(new Date(w.date))===thisWeek).length;
       const maxCount=weeklyTargets[ex]||1;
       const icon=ex.includes('Press')?'🏋️':ex.includes('Curl')?'💪':ex.includes('Fly')?'🕊️':ex.includes('Squat')?'🦵':ex.includes('Lunges')?'🦵':ex.includes('Deadlift')?'⚡':ex.includes('Pull')?'⬆️':ex.includes('Row')?'↔️':'🏃';
-      const li=document.createElement('div'); li.innerHTML=`${icon} ${ex}: <span class="${count>=maxCount?'done':'missing'}">${count} / ${maxCount}</span>`;
+      const li=document.createElement('div'); 
+      li.innerHTML=`${icon} ${ex}: <span class="${count>=maxCount?'done':'missing'}">${count} / ${maxCount}</span>`;
+      
+      // Make exercise clickable
+      li.style.cursor = 'pointer';
+      li.style.padding = '8px';
+      li.style.borderRadius = '4px';
+      li.style.transition = 'background-color 0.2s';
+      
+      // Add hover effect
+      li.addEventListener('mouseenter', () => {
+        li.style.backgroundColor = 'rgba(255, 127, 80, 0.1)';
+      });
+      li.addEventListener('mouseleave', () => {
+        li.style.backgroundColor = '';
+      });
+      
+      // Add click handler to navigate to log workout page with exercise selected
+      li.addEventListener('click', () => {
+        console.log('Clicked on weekly checklist exercise:', ex);
+        
+        // Navigate to log workout page
+        const navTabs = document.querySelectorAll('.nav-tab');
+        const pages = document.querySelectorAll('.page');
+        
+        // Remove active class from all tabs and pages
+        navTabs.forEach(t => t.classList.remove('active'));
+        pages.forEach(p => p.classList.remove('active'));
+        
+        // Activate log workout tab and page
+        const logWorkoutTab = document.querySelector('[data-page="log-workout"]');
+        const logWorkoutPage = document.getElementById('log-workout');
+        if (logWorkoutTab) logWorkoutTab.classList.add('active');
+        if (logWorkoutPage) logWorkoutPage.classList.add('active');
+        
+        // Fill in the exercise and trigger auto-fill
+        exerciseSelect.value = ex;
+        autoFillExerciseStats();
+        
+        // Visual feedback
+        li.style.backgroundColor = '#d4edda';
+        setTimeout(() => {
+          li.style.backgroundColor = '';
+        }, 1000);
+      });
+      
       box.appendChild(li);
     });
     checklistCarousel.appendChild(box);
@@ -895,13 +956,146 @@ document.getElementById('import-csv').addEventListener('change', (e) => {
   if (e.target.files.length) importCSV(e.target.files[0]);
 });
 */
+// Navigation System
+function initNavigation() {
+  const navTabs = document.querySelectorAll('.nav-tab');
+  const pages = document.querySelectorAll('.page');
+
+  navTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetPage = tab.getAttribute('data-page');
+      
+      // Remove active class from all tabs and pages
+      navTabs.forEach(t => t.classList.remove('active'));
+      pages.forEach(p => p.classList.remove('active'));
+      
+      // Add active class to clicked tab and corresponding page
+      tab.classList.add('active');
+      document.getElementById(targetPage).classList.add('active');
+      
+      // Special handling for different pages
+      if (targetPage === 'workout-history') {
+        renderLog();
+      } else if (targetPage === 'weekly-checklist') {
+        renderChecklist();
+      } else if (targetPage === 'progress-charts') {
+        renderChart();
+      } else if (targetPage === 'dashboard') {
+        renderTodaysCreativeWorkout();
+        renderQuickStats();
+      } else if (targetPage === 'manage-exercises') {
+        renderExercisesList();
+      }
+    });
+  });
+}
+
+// Quick Stats for Dashboard
+function renderQuickStats() {
+  const quickStatsContainer = document.getElementById('quick-stats');
+  if (!quickStatsContainer) return;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const thisWeek = getWeekString(new Date());
+  
+  // Today's workouts count
+  const todayWorkouts = workouts.filter(w => w.date === today).length;
+  
+  // This week's workouts count
+  const weekWorkouts = workouts.filter(w => getWeekString(new Date(w.date)) === thisWeek).length;
+  
+  // Total workouts
+  const totalWorkouts = workouts.length;
+  
+  // Weekly progress percentage
+  let totalRequired = 0, totalDone = 0;
+  for (const group in exercises) {
+    exercises[group].forEach(ex => {
+      const maxCount = weeklyTargets[ex] || 1;
+      totalRequired += maxCount;
+      const count = workouts.filter(w => w.exercise === ex && getWeekString(new Date(w.date)) === thisWeek).length;
+      totalDone += Math.min(count, maxCount);
+    });
+  }
+  const weeklyProgress = totalRequired === 0 ? 0 : Math.round((totalDone / totalRequired) * 100);
+
+  quickStatsContainer.innerHTML = `
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px;">
+      <div style="text-align: center; padding: 15px; background: #1e2124; border-radius: 8px;">
+        <div style="font-size: 2em; color: #ff7f50; font-weight: bold;">${todayWorkouts}</div>
+        <div style="font-size: 0.9em; color: #ccc;">Today</div>
+      </div>
+      <div style="text-align: center; padding: 15px; background: #1e2124; border-radius: 8px;">
+        <div style="font-size: 2em; color: #28a745; font-weight: bold;">${weekWorkouts}</div>
+        <div style="font-size: 0.9em; color: #ccc;">This Week</div>
+      </div>
+      <div style="text-align: center; padding: 15px; background: #1e2124; border-radius: 8px;">
+        <div style="font-size: 2em; color: #17a2b8; font-weight: bold;">${totalWorkouts}</div>
+        <div style="font-size: 0.9em; color: #ccc;">Total</div>
+      </div>
+      <div style="text-align: center; padding: 15px; background: #1e2124; border-radius: 8px;">
+        <div style="font-size: 2em; color: #ffc107; font-weight: bold;">${weeklyProgress}%</div>
+        <div style="font-size: 0.9em; color: #ccc;">Weekly Goal</div>
+      </div>
+    </div>
+  `;
+}
+
+// Exercise Management Page
+function renderExercisesList() {
+  const exercisesListContainer = document.getElementById('exercises-list');
+  if (!exercisesListContainer) return;
+
+  let html = '';
+  for (const group in exercises) {
+    html += `
+      <div style="margin-bottom: 25px; background: #1e2124; padding: 15px; border-radius: 8px;">
+        <h3 style="margin-top: 0; color: #ff7f50; border-bottom: 1px solid #444; padding-bottom: 10px;">
+          ${groupIcons[group] || '💪'} ${group}
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px;">
+    `;
+    
+    exercises[group].forEach(exercise => {
+      const weeklyTarget = weeklyTargets[exercise] || 1;
+      const thisWeek = getWeekString(new Date());
+      const weeklyCount = workouts.filter(w => w.exercise === exercise && getWeekString(new Date(w.date)) === thisWeek).length;
+      
+      html += `
+        <div style="padding: 10px; background: #2a2d35; border-radius: 6px; border-left: 3px solid ${weeklyCount >= weeklyTarget ? '#28a745' : '#dc3545'};">
+          <div style="font-weight: bold; margin-bottom: 5px;">${exercise}</div>
+          <div style="font-size: 0.9em; color: #ccc;">
+            Weekly: ${weeklyCount}/${weeklyTarget} 
+            ${weeklyCount >= weeklyTarget ? '✅' : '❌'}
+          </div>
+        </div>
+      `;
+    });
+    
+    html += '</div></div>';
+  }
+
+  if (html === '') {
+    html = '<p style="text-align: center; color: #666; margin: 40px 0;">No exercises found. Add some exercises to get started!</p>';
+  }
+
+  exercisesListContainer.innerHTML = html;
+}
+
+// Update existing event listeners to work with new button IDs
+document.addEventListener('DOMContentLoaded', () => {
+  initNavigation();
+  addSwipeListeners();
+  
+  // Update the add exercise button to work with the new manage exercises page
+  const addNewExerciseBtn = document.getElementById('add-new-exercise-btn');
+  if (addNewExerciseBtn) {
+    addNewExerciseBtn.addEventListener('click', showExerciseModal);
+  }
+});
+
 // Init
 loadData(); // This will load exercises first, then workouts, and populate selects
-
-// Initialize swipe functionality after page loads
-document.addEventListener('DOMContentLoaded', () => {
-  addSwipeListeners();
-});
 
 // PWA Notification
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').then(()=>console.log('SW Registered')); }

@@ -1,3 +1,61 @@
+/* Navigation Styles */
+.nav-header {
+  margin-bottom: 30px;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.nav-tab {
+  padding: 12px 20px;
+  background: #2a2d35;
+  color: #ccc;
+  border: 2px solid #444;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.nav-tab:hover {
+  background: #3a3d45;
+  color: #fff;
+  border-color: #ff7f50;
+}
+
+.nav-tab.active {
+  background: #ff7f50;
+  color: #fff;
+  border-color: #ff7f50;
+}
+
+/* Page System */
+.page {
+  display: none;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.page.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Make flex container stretch children to equal height */
 .container > div[style*='display: flex'] {
   align-items: stretch !important;

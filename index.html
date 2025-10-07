@@ -12,98 +12,141 @@
 </head>
 <body>
 <div class="container">
-
-
-<h1><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#ff7f50" style="vertical-align: middle; margin-right: 8px;"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/></svg>Gym Bro</h1>
-<div style="display: flex; gap: 24px; align-items: flex-start; margin-bottom: 2em; flex-wrap: wrap;">
-  <div style="flex:1; min-width:320px; background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:flex; flex-direction:column;">
-    <h2 style="margin-top:0;">Add Exercise</h2>
-    <form id="workout-form" style="margin-bottom:0; display: flex; flex-direction: column; gap: 12px;">
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <label for="date" style="min-width: 100px;">Date:</label>
-        <input type="date" id="date" required style="flex: 1;" />
-      </div>
-      
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <label for="exercise" style="min-width: 100px;">Exercise:</label>
-        <div style="display: flex; gap: 5px; align-items: center; flex: 1;">
-          <select id="exercise" required style="flex: 1;">
-            <option value="">Select Exercise</option>
-          </select>
-          <button type="button" id="add-exercise-btn" style="padding: 8px 12px; background: #28a745; border: none; border-radius: 4px; color: white; cursor: pointer;" title="Add New Exercise">+</button>
-        </div>
-      </div>
-      
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <label for="weight" style="min-width: 100px;">Weight (kg):</label>
-        <input type="number" id="weight" placeholder="Weight (kg)" required style="flex: 1;" />
-      </div>
-      
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <label for="reps" style="min-width: 100px;">Reps:</label>
-        <input type="number" id="reps" placeholder="Reps" required style="flex: 1;" />
-      </div>
-      
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <label for="notes" style="min-width: 100px;">Notes:</label>
-        <textarea id="notes" placeholder="Notes (optional)" style="flex: 1; height: 32px !important; min-height: 32px !important; max-height: 32px !important; resize: none; padding: 8px; box-sizing: border-box;"></textarea>
-      </div>
-      
-      <button type="submit" style="margin-top: 10px;">Add</button>
-    </form>
+  <!-- Navigation Header -->
+  <div class="nav-header">
+    <h1><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#ff7f50" style="vertical-align: middle; margin-right: 8px;"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/></svg>Gym Bro</h1>
+    
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-page="dashboard">🏠 Dashboard</button>
+      <button class="nav-tab" data-page="log-workout">📝 Log Workout</button>
+      <button class="nav-tab" data-page="workout-history">📊 History</button>
+      <button class="nav-tab" data-page="weekly-checklist">✅ Weekly Goals</button>
+      <button class="nav-tab" data-page="progress-charts">📈 Progress</button>
+      <button class="nav-tab" data-page="manage-exercises">⚙️ Exercises</button>
+    </nav>
   </div>
-  <div id="creative-workout" style="flex:1; min-width:320px; background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:flex; flex-direction:column;">
-    <h2 style="margin-top:0;">Today's Workout</h2>
-    <div id="creative-workout-list"></div>
-  </div>
-</div>
 
-<!-- Workout Log Box -->
-<div class="workout-log-box" style="margin-top:20px; background:#24262f; padding:15px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-  <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
-    <h2 style="margin: 0; text-align: center; width: 100%;">Workout Log</h2>
-    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;">
-      <span style="font-size:14px; font-weight:normal;">
-        <label for="filter-exercise" style="margin-left:5px;">Exercise:</label>
-        <select id="filter-exercise"><option value="">All Exercises</option></select>
-        <label for="filter-start" style="margin-left:10px;">From:</label>
-        <input type="date" id="filter-start" style="width:130px;" />
-        <label for="filter-end" style="margin-left:5px;">To:</label>
-        <input type="date" id="filter-end" style="width:130px;" />
-        <button id="apply-filter" style="padding:2px 5px;">Go</button>
-        <button id="clear-filter" style="padding:2px 5px;background:#dc3545;">X</button>
-      </span>
-      <button id="clear-all" style="background:#dc3545;">Delete All Data</button>
+  <!-- Page: Dashboard -->
+  <div id="dashboard" class="page active">
+    <div style="display: flex; gap: 24px; align-items: flex-start; margin-bottom: 2em; flex-wrap: wrap;">
+      <div id="creative-workout" style="flex:1; min-width:320px; background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:flex; flex-direction:column;">
+        <h2 style="margin-top:0;">Today's Workout</h2>
+        <div id="creative-workout-list"></div>
+      </div>
+      <div style="flex:1; min-width:320px; background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+        <h2 style="margin-top:0;">Quick Stats</h2>
+        <div id="quick-stats"></div>
+      </div>
     </div>
   </div>
-  <table id="log-table">
 
-    <tbody></tbody>
-  </table>
-</div>
-
-<!-- Weekly Checklist -->
-<div class="checklist">
-<h2>Weekly Checklist</h2>
-<div class="carousel" id="checklist-carousel"></div>
-</div>
-
-<!-- Progress Chart Box -->
-<div class="progress-chart-box" style="margin-top:20px; background:#24262f; padding:15px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-  <h2>Progress Chart</h2>
-  <div class="chart-controls">
-    <label for="chart-type">View: </label>
-    <select id="chart-type">
-      <option value="weight">Weight</option>
-      <option value="reps">Reps</option>
-    </select>
-    <label for="chart-exercise">Exercise: </label>
-    <select id="chart-exercise">
-      <option value="">All Exercises</option>
-    </select>
+  <!-- Page: Log Workout -->
+  <div id="log-workout" class="page">
+    <div style="max-width: 600px; margin: 0 auto;">
+      <div style="background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:flex; flex-direction:column;">
+        <h2 style="margin-top:0;">Add Exercise</h2>
+        <form id="workout-form" style="margin-bottom:0; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <label for="date" style="min-width: 100px;">Date:</label>
+            <input type="date" id="date" required style="flex: 1;" />
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <label for="exercise" style="min-width: 100px;">Exercise:</label>
+            <div style="display: flex; gap: 5px; align-items: center; flex: 1;">
+              <select id="exercise" required style="flex: 1;">
+                <option value="">Select Exercise</option>
+              </select>
+              <button type="button" id="add-exercise-btn" style="padding: 8px 12px; background: #28a745; border: none; border-radius: 4px; color: white; cursor: pointer;" title="Add New Exercise">+</button>
+            </div>
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <label for="weight" style="min-width: 100px;">Weight (kg):</label>
+            <input type="number" id="weight" placeholder="Weight (kg)" required style="flex: 1;" />
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <label for="reps" style="min-width: 100px;">Reps:</label>
+            <input type="number" id="reps" placeholder="Reps" required style="flex: 1;" />
+          </div>
+          
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <label for="notes" style="min-width: 100px;">Notes:</label>
+            <textarea id="notes" placeholder="Notes (optional)" style="flex: 1; height: 32px !important; min-height: 32px !important; max-height: 32px !important; resize: none; padding: 8px; box-sizing: border-box;"></textarea>
+          </div>
+          
+          <button type="submit" style="margin-top: 10px;">Add</button>
+        </form>
+      </div>
+    </div>
   </div>
-  <canvas id="progressChart"></canvas>
-</div>
+
+  <!-- Page: Workout History -->
+  <div id="workout-history" class="page">
+    <div class="workout-log-box" style="background:#24262f; padding:15px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+        <h2 style="margin: 0; text-align: center; width: 100%;">Workout Log</h2>
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;">
+          <span style="font-size:14px; font-weight:normal;">
+            <label for="filter-exercise" style="margin-left:5px;">Exercise:</label>
+            <select id="filter-exercise"><option value="">All Exercises</option></select>
+            <label for="filter-start" style="margin-left:10px;">From:</label>
+            <input type="date" id="filter-start" style="width:130px;" />
+            <label for="filter-end" style="margin-left:5px;">To:</label>
+            <input type="date" id="filter-end" style="width:130px;" />
+            <button id="apply-filter" style="padding:2px 5px;">Go</button>
+            <button id="clear-filter" style="padding:2px 5px;background:#dc3545;">X</button>
+          </span>
+          <button id="clear-all" style="background:#dc3545;">Delete All Data</button>
+        </div>
+      </div>
+      <table id="log-table">
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Page: Weekly Checklist -->
+  <div id="weekly-checklist" class="page">
+    <div class="checklist">
+      <h2>Weekly Checklist</h2>
+      <div class="carousel" id="checklist-carousel"></div>
+    </div>
+  </div>
+
+  <!-- Page: Progress Charts -->
+  <div id="progress-charts" class="page">
+    <div class="progress-chart-box" style="background:#24262f; padding:15px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+      <h2>Progress Chart</h2>
+      <div class="chart-controls">
+        <label for="chart-type">View: </label>
+        <select id="chart-type">
+          <option value="weight">Weight</option>
+          <option value="reps">Reps</option>
+        </select>
+        <label for="chart-exercise">Exercise: </label>
+        <select id="chart-exercise">
+          <option value="">All Exercises</option>
+        </select>
+      </div>
+      <canvas id="progressChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Page: Manage Exercises -->
+  <div id="manage-exercises" class="page">
+    <div style="max-width: 800px; margin: 0 auto;">
+      <div style="background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+        <h2 style="margin-top:0;">Manage Exercises</h2>
+        <div style="margin-bottom: 20px;">
+          <button id="add-new-exercise-btn" style="padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">+ Add New Exercise</button>
+        </div>
+        <div id="exercises-list"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Add Exercise Popup Modal -->
