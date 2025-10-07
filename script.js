@@ -173,12 +173,27 @@ async function loadData() {
     console.log('[CreativeWorkout] Today:', today);
     console.log('[CreativeWorkout] Yesterday:', yesterday);
     console.log('[CreativeWorkout] Workouts array:', workouts);
-    // Use all exercises from the weekly checklist
+    
+    const thisWeek = getWeekString(new Date());
+    console.log('[CreativeWorkout] Current week:', thisWeek);
+    
+    // Use only exercises that haven't reached their weekly targets
     const allExercises = [];
     for (const group in exercises) {
-      exercises[group].forEach(ex => allExercises.push(ex));
+      exercises[group].forEach(ex => {
+        const weeklyTarget = weeklyTargets[ex] || 1;
+        const weeklyCount = workouts.filter(w => w.exercise === ex && getWeekString(new Date(w.date)) === thisWeek).length;
+        
+        // Only include exercises that haven't reached their weekly target
+        if (weeklyCount < weeklyTarget) {
+          allExercises.push(ex);
+          console.log('[CreativeWorkout] Including', ex, '- current:', weeklyCount, 'target:', weeklyTarget);
+        } else {
+          console.log('[CreativeWorkout] Skipping', ex, '- already reached target:', weeklyCount, '/', weeklyTarget);
+        }
+      });
     }
-    console.log('[CreativeWorkout] All exercises from weekly checklist:', allExercises);
+    console.log('[CreativeWorkout] Exercises needing work this week:', allExercises);
     // Find completed exercises for today and yesterday
     const completedToday = new Set(workouts.filter(w => w.date === today).map(w => w.exercise));
     const completedYesterday = new Set(workouts.filter(w => w.date === yesterday).map(w => w.exercise));
