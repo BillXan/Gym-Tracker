@@ -1034,15 +1034,32 @@ function renderQuickStats() {
   const expectedDailyExercises = Math.max(2, Math.ceil(dailyTargetExercises));
   const todayProgress = Math.min(100, (todayExercises.length / expectedDailyExercises) * 100);
   
-  // Weekly progress percentage
+  // Calculate weekly muscle group progress
+  const weeklyMuscleGroupProgress = {};
   let totalRequired = 0, totalDone = 0;
+  
   for (const group in exercises) {
+    let groupRequired = 0, groupDone = 0;
+    
     exercises[group].forEach(ex => {
       const maxCount = weeklyTargets[ex] || 1;
+      groupRequired += maxCount;
       totalRequired += maxCount;
+      
       const count = workouts.filter(w => w.exercise === ex && getWeekString(new Date(w.date)) === thisWeek).length;
-      totalDone += Math.min(count, maxCount);
+      const exerciseDone = Math.min(count, maxCount);
+      groupDone += exerciseDone;
+      totalDone += exerciseDone;
     });
+    
+    // Calculate percentage for this muscle group
+    const groupPercentage = groupRequired === 0 ? 0 : (groupDone / groupRequired) * 100;
+    weeklyMuscleGroupProgress[group] = {
+      completed: groupDone,
+      required: groupRequired,
+      percentage: groupPercentage,
+      icon: groupIcons[group] || '💪'
+    };
   }
   const weeklyProgress = totalRequired === 0 ? 0 : (totalDone / totalRequired) * 100;
 
@@ -1051,6 +1068,33 @@ function renderQuickStats() {
     <div style="display: flex; gap: 30px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 25px;">
       ${createProgressRing(todayProgress, '#ff7f50', "Today's Goal")}
       ${createProgressRing(weeklyProgress, '#28a745', 'Weekly Goal')}
+    </div>
+    
+    <!-- Muscle Group Progress Rings -->
+    <div style="display: flex; gap: 20px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 25px;">
+      ${Object.entries(weeklyMuscleGroupProgress).map(([group, progress]) => `
+        <div style="text-align: center;">
+          <div style="position: relative; width: 80px; height: 80px; margin: 0 auto;">
+            <svg width="80" height="80" style="transform: rotate(-90deg);">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#2a2d35" stroke-width="6"></circle>
+              <circle cx="40" cy="40" r="32" fill="none" 
+                stroke="${progress.percentage >= 100 ? '#28a745' : progress.percentage >= 50 ? '#ffc107' : '#ff7f50'}" 
+                stroke-width="6" 
+                stroke-linecap="round"
+                stroke-dasharray="${2 * Math.PI * 32}"
+                stroke-dashoffset="${2 * Math.PI * 32 * (1 - progress.percentage / 100)}"
+                style="transition: stroke-dashoffset 0.6s ease-in-out;">
+              </circle>
+            </svg>
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+              <div style="font-size: 0.6em; font-weight: bold; line-height: 1.1; color: #ccc;">${group}</div>
+              <div style="font-size: 0.8em; font-weight: bold; color: ${progress.percentage >= 100 ? '#28a745' : progress.percentage >= 50 ? '#ffc107' : '#ff7f50'}; margin-top: 2px;">
+                ${Math.round(progress.percentage)}%
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('')}
     </div>
     
     <!-- Quick Stats Grid -->
