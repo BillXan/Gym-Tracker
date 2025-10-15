@@ -1023,16 +1023,27 @@ function renderQuickStats() {
   // Total workouts
   const totalWorkouts = workouts.length;
   
-  // Calculate daily target based on weekly targets spread across 7 days
-  let dailyTargetExercises = 0;
+  // Calculate dynamic daily target based on available exercises (same logic as creative workout)
+  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  
+  // Count exercises that need work this week and aren't completed today/yesterday
+  let availableExercises = 0;
+  const completedToday = new Set(workouts.filter(w => w.date === today).map(w => w.exercise));
+  const completedYesterday = new Set(workouts.filter(w => w.date === yesterday).map(w => w.exercise));
+  
   for (const group in exercises) {
     exercises[group].forEach(ex => {
       const weeklyTarget = weeklyTargets[ex] || 1;
-      dailyTargetExercises += weeklyTarget / 7;
+      const weeklyCount = workouts.filter(w => w.exercise === ex && getWeekString(new Date(w.date)) === thisWeek).length;
+      
+      if (weeklyCount < weeklyTarget && !completedToday.has(ex) && !completedYesterday.has(ex)) {
+        availableExercises++;
+      }
     });
   }
-  const expectedDailyExercises = Math.max(2, Math.ceil(dailyTargetExercises));
-  const todayProgress = Math.min(100, (todayExercises.length / expectedDailyExercises) * 100);
+  
+  const dailyExerciseTarget = Math.min(8, availableExercises + todayExercises.length);
+  const todayProgress = Math.min(100, (todayExercises.length / dailyExerciseTarget) * 100);
   
   // Calculate weekly muscle group progress
   const weeklyMuscleGroupProgress = {};
