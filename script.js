@@ -210,8 +210,25 @@ async function loadData() {
   // Creative Today's Workout Generator using backend data
   function getTodaysCreativeWorkout() {
     const today = new Date().toISOString().slice(0, 10);
+    
+    // Check if we have a cached workout for today
+    const cachedWorkout = localStorage.getItem('creativeWorkout');
+    const cachedDate = localStorage.getItem('creativeWorkoutDate');
+    
+    if (cachedWorkout && cachedDate === today) {
+      console.log('[CreativeWorkout] Using cached workout for today');
+      const cached = JSON.parse(cachedWorkout);
+      
+      // Filter out exercises that have been completed today
+      const completedToday = new Set(workouts.filter(w => w.date === today).map(w => w.exercise));
+      const filtered = cached.filter(item => !completedToday.has(item.exercise));
+      
+      console.log('[CreativeWorkout] Cached list after filtering completed:', filtered);
+      return filtered;
+    }
+    
+    console.log('[CreativeWorkout] Generating new workout for:', today);
     const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-    console.log('[CreativeWorkout] Today:', today);
     console.log('[CreativeWorkout] Yesterday:', yesterday);
     console.log('[CreativeWorkout] Workouts array:', workouts);
     
@@ -292,6 +309,11 @@ async function loadData() {
       }
     }
     console.log('[CreativeWorkout] Final generated list (daily target:', dailyTarget, '):', result);
+    
+    // Save to localStorage for consistency
+    localStorage.setItem('creativeWorkout', JSON.stringify(result));
+    localStorage.setItem('creativeWorkoutDate', today);
+    
     return result;
   }
 
@@ -927,13 +949,40 @@ exerciseSelect.addEventListener('change', autoFillExerciseStats);
 form.addEventListener('submit',async e=>{
   e.preventDefault();
   const workout={date:document.getElementById('date').value,exercise:exerciseSelect.value,weight:parseFloat(document.getElementById('weight').value),reps:parseInt(document.getElementById('reps').value),notes:document.getElementById('notes').value};
-  workouts.push(workout); await saveData(); renderAll(); form.reset(); dateInput.valueAsDate=new Date(); populateExerciseSelect();
+  workouts.push(workout); 
+  
+  // Invalidate creative workout cache when logging an exercise
+  localStorage.removeItem('creativeWorkout');
+  localStorage.removeItem('creativeWorkoutDate');
+  
+  await saveData(); renderAll(); form.reset(); dateInput.valueAsDate=new Date(); populateExerciseSelect();
 });
 
-window.editWorkout=async function(i){ const w=workouts[i]; document.getElementById('date').value=w.date; exerciseSelect.value=w.exercise; document.getElementById('weight').value=w.weight; document.getElementById('reps').value=w.reps; document.getElementById('notes').value=w.notes; workouts.splice(i,1); await saveData(); renderAll(); };
+window.editWorkout=async function(i){ 
+  const w=workouts[i]; 
+  document.getElementById('date').value=w.date; 
+  exerciseSelect.value=w.exercise; 
+  document.getElementById('weight').value=w.weight; 
+  document.getElementById('reps').value=w.reps; 
+  document.getElementById('notes').value=w.notes; 
+  workouts.splice(i,1); 
+  
+  // Invalidate creative workout cache when editing
+  localStorage.removeItem('creativeWorkout');
+  localStorage.removeItem('creativeWorkoutDate');
+  
+  await saveData(); 
+  renderAll(); 
+};
+
 window.deleteWorkout=async function(i){
   const deleted = workouts[i];
   workouts.splice(i,1);
+  
+  // Invalidate creative workout cache when deleting
+  localStorage.removeItem('creativeWorkout');
+  localStorage.removeItem('creativeWorkoutDate');
+  
   // Send deleted workout to backend for precise row deletion
   try {
     await fetch(`${API_BASE}/api/deleteWorkout`, {
