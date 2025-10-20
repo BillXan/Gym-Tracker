@@ -166,6 +166,47 @@ async function loadData() {
     return 'Other';
   }
 
+  // Calculate daily exercise target based on 5 workout days per week
+  function calculateDailyTarget() {
+    const today = new Date().toISOString().slice(0, 10);
+    const thisWeek = getWeekString(new Date());
+    
+    // Count unique workout days this week (not including today)
+    const workoutDaysThisWeek = new Set(
+      workouts
+        .filter(w => getWeekString(new Date(w.date)) === thisWeek && w.date !== today)
+        .map(w => w.date)
+    ).size;
+    
+    // Calculate remaining workout days (5 days/week - days already worked out)
+    const remainingWorkoutDays = Math.max(1, 5 - workoutDaysThisWeek);
+    
+    // Calculate remaining days in the week
+    const todayDate = new Date();
+    const monday = new Date(thisWeek);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    const remainingDaysInWeek = Math.max(1, Math.ceil((sunday - todayDate) / (1000 * 60 * 60 * 24)) + 1);
+    
+    // Count remaining exercises needed this week
+    let remainingExercises = 0;
+    for (const group in exercises) {
+      exercises[group].forEach(ex => {
+        const weeklyTarget = weeklyTargets[ex] || 1;
+        const weeklyCount = workouts.filter(w => w.exercise === ex && getWeekString(new Date(w.date)) === thisWeek).length;
+        const remaining = Math.max(0, weeklyTarget - weeklyCount);
+        remainingExercises += remaining;
+      });
+    }
+    
+    // Divide by remaining workout days, but if there are fewer days in week than workout days remaining,
+    // use the remaining days in week instead
+    const divisor = Math.min(remainingWorkoutDays, remainingDaysInWeek);
+    const dailyTarget = Math.max(1, Math.ceil(remainingExercises / divisor));
+    
+    return dailyTarget;
+  }
+
   // Creative Today's Workout Generator using backend data
   function getTodaysCreativeWorkout() {
     const today = new Date().toISOString().slice(0, 10);
@@ -187,9 +228,9 @@ async function loadData() {
         // Only include exercises that haven't reached their weekly target
         if (weeklyCount < weeklyTarget) {
           allExercises.push(ex);
-          console.log('[CreativeWorkout] Including', ex, '- current:', weeklyCount, 'target:', weeklyTarget);
+          // console.log('[CreativeWorkout] Including', ex, '- current:', weeklyCount, 'target:', weeklyTarget);
         } else {
-          console.log('[CreativeWorkout] Skipping', ex, '- already reached target:', weeklyCount, '/', weeklyTarget);
+          // console.log('[CreativeWorkout] Skipping', ex, '- already reached target:', weeklyCount, '/', weeklyTarget);
         }
       });
     }
@@ -225,10 +266,15 @@ async function loadData() {
       [groups[i], groups[j]] = [groups[j], groups[i]];
     }
     console.log('[CreativeWorkout] Groups after shuffle:', groups);
-    // Build workout list, alternating groups, limited to max 8 exercises
+    
+    // Get daily target from shared calculation function
+    const dailyTarget = calculateDailyTarget();
+    
+    // Build workout list, limited to daily target minus already completed today
     const result = [];
     let lastGroup = null;
-    const maxExercises = 8 - completedToday.size; // Adjust max based on already completed today
+    const maxExercises = Math.max(0, dailyTarget - completedToday.size);
+    console.log('[CreativeWorkout] Daily target:', dailyTarget, 'Already completed today:', completedToday.size, 'Max to suggest:', maxExercises);
     while (groups.length > 0 && result.length < maxExercises) {
       let idx = groups.findIndex(g => g !== lastGroup);
       if (idx === -1) idx = 0;
@@ -245,7 +291,7 @@ async function loadData() {
         groups.splice(idx, 1);
       }
     }
-    console.log('[CreativeWorkout] Final generated list (max 8):', result);
+    console.log('[CreativeWorkout] Final generated list (daily target:', dailyTarget, '):', result);
     return result;
   }
 
@@ -1023,26 +1069,8 @@ function renderQuickStats() {
   // Total workouts
   const totalWorkouts = workouts.length;
   
-  // Calculate dynamic daily target based on available exercises (same logic as creative workout)
-  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-  
-  // Count exercises that need work this week and aren't completed today/yesterday
-  let availableExercises = 0;
-  const completedToday = new Set(workouts.filter(w => w.date === today).map(w => w.exercise));
-  const completedYesterday = new Set(workouts.filter(w => w.date === yesterday).map(w => w.exercise));
-  
-  for (const group in exercises) {
-    exercises[group].forEach(ex => {
-      const weeklyTarget = weeklyTargets[ex] || 1;
-      const weeklyCount = workouts.filter(w => w.exercise === ex && getWeekString(new Date(w.date)) === thisWeek).length;
-      
-      if (weeklyCount < weeklyTarget && !completedToday.has(ex) && !completedYesterday.has(ex)) {
-        availableExercises++;
-      }
-    });
-  }
-  
-  const dailyExerciseTarget = Math.min(8, availableExercises + todayExercises.length);
+  // Get daily target from shared calculation function
+  const dailyExerciseTarget = calculateDailyTarget();
   const todayProgress = Math.min(100, (todayExercises.length / dailyExerciseTarget) * 100);
   
   // Calculate weekly muscle group progress
