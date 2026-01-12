@@ -12,20 +12,10 @@
 </head>
 <body>
 <div class="container">
-  <!-- Navigation Header -->
+  <!-- Header -->
   <div class="nav-header">
     <h1><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#ff7f50" style="vertical-align: middle; margin-right: 8px;"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/></svg>Gym Bro</h1>
     <h3 style="text-align: center;"><del>  I can do it!</del>  If I die, I die.</h3>
-    
-    <!-- Navigation Tabs -->
-    <nav class="nav-tabs">
-      <button class="nav-tab active" data-page="dashboard">🏠 Dashboard</button>
-      <button class="nav-tab" data-page="log-workout">📝 Log Workout</button>
-      <button class="nav-tab" data-page="workout-history">📊 History</button>
-      <button class="nav-tab" data-page="weekly-checklist">✅ Weekly Goals</button>
-      <button class="nav-tab" data-page="progress-charts">📈 Progress</button>
-      <button class="nav-tab" data-page="manage-exercises">⚙️ Exercises</button>
-    </nav>
   </div>
 
   <!-- Page: Dashboard -->
@@ -177,6 +167,34 @@
     </form>
   </div>
 </div>
+
+<!-- Bottom Navigation -->
+<nav class="bottom-nav">
+  <button class="nav-tab active" data-page="dashboard">
+    <span class="nav-icon">🏠</span>
+    <span class="nav-label">Dashboard</span>
+  </button>
+  <button class="nav-tab" data-page="log-workout">
+    <span class="nav-icon">📝</span>
+    <span class="nav-label">Log Workout</span>
+  </button>
+  <button class="nav-tab" data-page="workout-history">
+    <span class="nav-icon">📊</span>
+    <span class="nav-label">History</span>
+  </button>
+  <button class="nav-tab" data-page="weekly-checklist">
+    <span class="nav-icon">✅</span>
+    <span class="nav-label">Weekly Goals</span>
+  </button>
+  <button class="nav-tab" data-page="progress-charts">
+    <span class="nav-icon">📈</span>
+    <span class="nav-label">Progress</span>
+  </button>
+  <button class="nav-tab" data-page="manage-exercises">
+    <span class="nav-icon">⚙️</span>
+    <span class="nav-label">Exercises</span>
+  </button>
+</nav>
 
 <script src="script.js"></script>
 </body>
