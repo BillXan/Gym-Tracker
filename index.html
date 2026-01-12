@@ -34,41 +34,41 @@
 
   <!-- Page: Log Workout -->
   <div id="log-workout" class="page">
-    <div style="max-width: 600px; margin: 0 auto;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 0 10px;">
       <div style="background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:flex; flex-direction:column;">
         <h2 style="margin-top:0;">Add Exercise</h2>
         <form id="workout-form" style="margin-bottom:0; display: flex; flex-direction: column; gap: 12px;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <label for="date" style="min-width: 100px;">Date:</label>
-            <input type="date" id="date" required style="flex: 1;" />
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="date" style="min-width: 80px; font-size: 14px;">Date:</label>
+            <input type="date" id="date" required style="flex: 1; min-width: 0;" />
           </div>
           
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <label for="exercise" style="min-width: 100px;">Exercise:</label>
-            <div style="display: flex; gap: 5px; align-items: center; flex: 1;">
-              <select id="exercise" required style="flex: 1;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="exercise" style="min-width: 80px; font-size: 14px;">Exercise:</label>
+            <div style="display: flex; gap: 5px; align-items: center; flex: 1; min-width: 0;">
+              <select id="exercise" required style="flex: 1; min-width: 0;">
                 <option value="">Select Exercise</option>
               </select>
-              <button type="button" id="add-exercise-btn" style="padding: 8px 12px; background: #28a745; border: none; border-radius: 4px; color: white; cursor: pointer;" title="Add New Exercise">+</button>
+              <button type="button" id="add-exercise-btn" style="padding: 8px 12px; background: #28a745; border: none; border-radius: 4px; color: white; cursor: pointer; flex-shrink: 0;" title="Add New Exercise">+</button>
             </div>
           </div>
           
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <label for="weight" style="min-width: 100px;">Weight (kg):</label>
-            <input type="number" id="weight" placeholder="Weight (kg)" required style="flex: 1;" inputmode="decimal" step="0.1" />
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="weight" style="min-width: 80px; font-size: 14px;">Weight (kg):</label>
+            <input type="number" id="weight" placeholder="Weight" required style="flex: 1; min-width: 0;" inputmode="decimal" step="0.1" />
           </div>
           
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <label for="reps" style="min-width: 100px;">Reps:</label>
-            <input type="number" id="reps" placeholder="Reps" required style="flex: 1;" inputmode="numeric" />
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="reps" style="min-width: 80px; font-size: 14px;">Reps:</label>
+            <input type="number" id="reps" placeholder="Reps" required style="flex: 1; min-width: 0;" inputmode="numeric" />
           </div>
           
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <label for="notes" style="min-width: 100px;">Notes:</label>
-            <textarea id="notes" placeholder="Notes (optional)" style="flex: 1; height: 32px !important; min-height: 32px !important; max-height: 32px !important; resize: none; padding: 8px; box-sizing: border-box;"></textarea>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="notes" style="min-width: 80px; font-size: 14px;">Notes:</label>
+            <textarea id="notes" placeholder="Notes (optional)" style="flex: 1; min-width: 0; height: 32px !important; min-height: 32px !important; max-height: 32px !important; resize: none; padding: 8px; box-sizing: border-box;"></textarea>
           </div>
           
-          <button type="submit" style="margin-top: 10px;">Add</button>
+          <button type="submit" style="margin-top: 10px; width: 100%;">Add</button>
         </form>
       </div>
     </div>
@@ -93,9 +93,11 @@
           <button id="clear-all" style="background:#dc3545;">Delete All Data</button>
         </div>
       </div>
-      <table id="log-table">
-        <tbody></tbody>
-      </table>
+      <div class="table-wrapper">
+        <table id="log-table">
+          <tbody></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
