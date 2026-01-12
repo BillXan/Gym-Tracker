@@ -131,6 +131,7 @@ input, select, button, textarea {
   border-radius: 8px;
   background: #23262f;
   color: #e0e0e0;
+  font-size: 16px; /* Prevent mobile zoom on focus */
   transition: box-shadow 0.3s, border-color 0.3s, background 0.3s;
 }
 textarea { resize: vertical; }
