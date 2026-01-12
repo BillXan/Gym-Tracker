@@ -1159,7 +1159,7 @@ function renderQuickStats() {
     </div>
     
     <!-- Muscle Group Progress Rings -->
-    <div style="display: flex; gap: 20px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 25px;">
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 300px; margin: 0 auto 25px;">
       ${Object.entries(weeklyMuscleGroupProgress).map(([group, progress]) => `
         <div style="text-align: center;">
           <div style="position: relative; width: 80px; height: 80px; margin: 0 auto;">
