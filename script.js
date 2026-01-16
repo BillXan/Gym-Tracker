@@ -75,6 +75,27 @@ function populateExerciseSelect(){
 // Save/load from backend
 const API_BASE = 'https://gym-tracker-rmhb.onrender.com';
 
+// Status icon update functions
+function updateStatusIcon(status) {
+  const statusIcon = document.getElementById('status-icon');
+  if (!statusIcon) return;
+  
+  switch(status) {
+    case 'loading':
+      statusIcon.textContent = '⏳';
+      statusIcon.title = 'Loading data...';
+      break;
+    case 'online':
+      statusIcon.textContent = '🟢';
+      statusIcon.title = 'Online - Connected to server';
+      break;
+    case 'offline':
+      statusIcon.textContent = '🔴';
+      statusIcon.title = 'Offline - Failed to connect';
+      break;
+  }
+}
+
 async function loadExercises() {
   console.log('Loading exercises from backend...');
   try {
@@ -128,6 +149,7 @@ async function loadExercises() {
 
 async function loadData() {
   console.log('=== Starting loadData() ===');
+  updateStatusIcon('loading');
   try {
     // Load both exercises and workouts
     console.log('About to call loadExercises()');
@@ -144,10 +166,12 @@ async function loadData() {
     
     console.log('About to call renderAll()');
     renderAll();
+    updateStatusIcon('online');
     console.log('=== loadData() completed successfully ===');
   } catch (e) {
     console.error('Failed to load data:', e);
     console.error('Error in loadData():', e.message);
+    updateStatusIcon('offline');
   }
 }
 
