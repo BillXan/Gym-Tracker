@@ -106,6 +106,18 @@ function updateStatusIcon(status) {
 
 async function loadExercises() {
   console.log('Loading exercises from backend...');
+  
+  // Try to load from cache first
+  const cachedExercises = localStorage.getItem('cachedExercises');
+  const cachedTargets = localStorage.getItem('cachedWeeklyTargets');
+  
+  if (cachedExercises && cachedTargets) {
+    console.log('Loading exercises from cache');
+    exercises = JSON.parse(cachedExercises);
+    weeklyTargets = JSON.parse(cachedTargets);
+    populateExerciseSelect();
+  }
+  
   try {
     console.log('Fetching from:', `${API_BASE}/api/exercises`);
     const res = await fetch(`${API_BASE}/api/exercises`);
@@ -124,6 +136,7 @@ async function loadExercises() {
     if (data.exercises) {
       exercises = data.exercises;
       console.log('Set exercises to:', exercises);
+      localStorage.setItem('cachedExercises', JSON.stringify(exercises));
     } else {
       console.error('No exercises property in response data');
       exercises = data; // Fallback in case structure is different
@@ -132,6 +145,7 @@ async function loadExercises() {
     if (data.weeklyTargets) {
       weeklyTargets = data.weeklyTargets;
       console.log('Set weeklyTargets to:', weeklyTargets);
+      localStorage.setItem('cachedWeeklyTargets', JSON.stringify(weeklyTargets));
     } else {
       console.error('No weeklyTargets property in response data');
     }
@@ -145,19 +159,30 @@ async function loadExercises() {
     console.error('Error message:', e.message);
     console.error('Error stack:', e.stack);
     
-    // Set empty exercises if backend fails
-    console.log('Setting empty exercises due to backend failure');
-    exercises = {};
-    weeklyTargets = {};
-    console.log('Empty exercises set:', exercises);
-    console.log('Empty weeklyTargets set:', weeklyTargets);
-    populateExerciseSelect();
+    // If no cache and backend fails, set empty
+    if (!cachedExercises) {
+      console.log('Setting empty exercises due to backend failure');
+      exercises = {};
+      weeklyTargets = {};
+      console.log('Empty exercises set:', exercises);
+      console.log('Empty weeklyTargets set:', weeklyTargets);
+      populateExerciseSelect();
+    }
   }
 }
 
 async function loadData() {
   console.log('=== Starting loadData() ===');
   updateStatusIcon('loading');
+  
+  // Try to load from cache first for instant display
+  const cachedWorkouts = localStorage.getItem('cachedWorkouts');
+  if (cachedWorkouts) {
+    console.log('Loading workouts from cache');
+    workouts = JSON.parse(cachedWorkouts);
+    renderAll();
+  }
+  
   try {
     // Load both exercises and workouts
     console.log('About to call loadExercises()');
@@ -172,6 +197,9 @@ async function loadData() {
     console.log('Loaded workouts from backend:', workouts);
     console.log('Number of workouts:', workouts.length);
     
+    // Cache workouts
+    localStorage.setItem('cachedWorkouts', JSON.stringify(workouts));
+    
     console.log('About to call renderAll()');
     renderAll();
     updateStatusIcon('online');
@@ -180,6 +208,12 @@ async function loadData() {
     console.error('Failed to load data:', e);
     console.error('Error in loadData():', e.message);
     updateStatusIcon('offline');
+    
+    // If no cache, initialize empty array
+    if (!cachedWorkouts) {
+      workouts = [];
+      renderAll();
+    }
   }
 }
 
@@ -436,6 +470,9 @@ async function loadData() {
 
 async function saveData() {
   try {
+    // Save to cache immediately for instant updates
+    localStorage.setItem('cachedWorkouts', JSON.stringify(workouts));
+    
     await fetch(`${API_BASE}/api/workouts`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
