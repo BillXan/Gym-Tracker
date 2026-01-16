@@ -33,6 +33,14 @@ function populateExerciseSelect(){
   filterExercise.innerHTML='<option value="">All Exercises</option>'; 
   chartExerciseSelect.innerHTML='<option value="">All Exercises</option>';
   
+  // Add default "Choose exercise" option to the main exercise select
+  const defaultOption = document.createElement('option');
+  defaultOption.value = '';
+  defaultOption.textContent = 'Choose exercise';
+  defaultOption.selected = true;
+  defaultOption.disabled = true;
+  exerciseSelect.appendChild(defaultOption);
+  
   // Only populate if exercises are loaded
   if (!exercises || Object.keys(exercises).length === 0) {
     console.log('No exercises loaded from sheet - exercise selects will be empty');
