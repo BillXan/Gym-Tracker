@@ -148,8 +148,8 @@ h1, h2 { text-align: center; margin: 10px 0; }
   max-width: 1000px; 
   margin: auto; 
   padding: 20px;
-  padding-left: max(40px, env(safe-area-inset-left));
-  padding-right: max(40px, env(safe-area-inset-right));
+  padding-left: max(60px, env(safe-area-inset-left));
+  padding-right: max(60px, env(safe-area-inset-right));
   padding-bottom: calc(80px + env(safe-area-inset-bottom)); /* Add space for bottom navigation + safe area */
 }
 
