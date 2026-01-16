@@ -337,6 +337,12 @@ input, select, textarea, button {
   border: 1px solid #444;
 }
 
+textarea {
+  height: 20px;
+  line-height: 1.5;
+  font-family: inherit;
+}
+
 input:focus, input:hover,
 select:focus, select:hover,
 textarea:focus, textarea:hover,
