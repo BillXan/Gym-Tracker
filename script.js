@@ -1284,6 +1284,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (addNewExerciseBtn) {
     addNewExerciseBtn.addEventListener('click', showExerciseModal);
   }
+  
+  // Add click listener to Gym Bro heading to reload page
+  const gymBroHeading = document.querySelector('.nav-header h1');
+  if (gymBroHeading) {
+    gymBroHeading.style.cursor = 'pointer';
+    gymBroHeading.addEventListener('click', () => {
+      location.reload();
+    });
+  }
 });
 
 // Init
