@@ -1212,24 +1212,24 @@ function renderQuickStats() {
 
   quickStatsContainer.innerHTML = `
     <!-- Progress Rings -->
-    <div style="display: flex; gap: 30px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 25px;">
+    <div style="display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
       ${createProgressRing(todayProgress, '#ff7f50', "Today's Goal")}
       ${createProgressRing(weeklyProgress, '#28a745', 'Weekly Goal')}
     </div>
     
     <!-- Muscle Group Progress Rings -->
-    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 300px; margin: 0 auto 25px;">
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 400px; margin: 0 auto 10px;">
       ${Object.entries(weeklyMuscleGroupProgress).map(([group, progress]) => `
         <div style="text-align: center;">
-          <div style="position: relative; width: 80px; height: 80px; margin: 0 auto;">
-            <svg width="80" height="80" style="transform: rotate(-90deg);">
-              <circle cx="40" cy="40" r="32" fill="none" stroke="#2a2d35" stroke-width="6"></circle>
-              <circle cx="40" cy="40" r="32" fill="none" 
+          <div style="position: relative; width: 100px; height: 100px; margin: 0 auto;">
+            <svg width="100" height="100" style="transform: rotate(-90deg);">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="#2a2d35" stroke-width="7"></circle>
+              <circle cx="50" cy="50" r="42" fill="none" 
                 stroke="${progress.percentage >= 100 ? '#28a745' : progress.percentage >= 50 ? '#ffc107' : '#ff7f50'}" 
-                stroke-width="6" 
+                stroke-width="7" 
                 stroke-linecap="round"
-                stroke-dasharray="${2 * Math.PI * 32}"
-                stroke-dashoffset="${2 * Math.PI * 32 * (1 - progress.percentage / 100)}"
+                stroke-dasharray="${2 * Math.PI * 42}"
+                stroke-dashoffset="${2 * Math.PI * 42 * (1 - progress.percentage / 100)}"
                 style="transition: stroke-dashoffset 0.6s ease-in-out;">
               </circle>
             </svg>
