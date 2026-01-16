@@ -990,12 +990,12 @@ form.addEventListener('submit',async e=>{
   await saveData(); 
   renderAll(); 
   
-  // Show confirmation animation
-  const confirmationEl = document.getElementById('confirmation-animation');
-  if (confirmationEl) {
-    confirmationEl.style.display = 'block';
+  // Show confirmation animation on button
+  const addButton = document.getElementById('add-workout-btn');
+  if (addButton) {
+    addButton.style.animation = 'confirmationPulse 1s ease-in-out';
     setTimeout(() => {
-      confirmationEl.style.display = 'none';
+      addButton.style.animation = '';
     }, 1000);
   }
   
