@@ -3,6 +3,18 @@
   margin-bottom: 15px;
 }
 
+/* Content Box - Consistent styling for all page boxes */
+.content-box {
+  background: #24262f;
+  padding: 18px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.content-box h2 {
+  margin-top: 0;
+}
+
 /* Bottom Navigation */
 .bottom-nav {
   position: fixed;

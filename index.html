@@ -26,12 +26,12 @@
   <!-- Page: Dashboard -->
   <div id="dashboard" class="page active">
     <div style="display: flex; gap: 24px; align-items: flex-start; margin-bottom: 2em; flex-wrap: wrap;">
-      <div id="creative-workout" style="flex:1; min-width:320px; background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:flex; flex-direction:column;">
-        <h2 style="margin-top:0;">Today's Workout</h2>
+      <div id="creative-workout" class="content-box" style="flex:1; min-width:320px; display:flex; flex-direction:column;">
+        <h2>Today's Workout</h2>
         <div id="creative-workout-list"></div>
       </div>
-      <div style="flex:1; min-width:320px; background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-        <h2 style="margin-top:0;">Quick Stats</h2>
+      <div class="content-box" style="flex:1; min-width:320px;">
+        <h2>Quick Stats</h2>
         <div id="quick-stats"></div>
       </div>
     </div>
@@ -40,8 +40,8 @@
   <!-- Page: Log Workout -->
   <div id="log-workout" class="page">
     <div style="max-width: 600px; margin: 0 auto; padding: 0 10px;">
-      <div style="background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1); display:flex; flex-direction:column;">
-        <h2 style="margin-top:0;">Add Exercise</h2>
+      <div class="content-box" style="display:flex; flex-direction:column;">
+        <h2>Add Exercise</h2>
         <form id="workout-form" style="margin-bottom:0; display: flex; flex-direction: column; gap: 12px;">
           <div style="display: flex; align-items: center; gap: 8px;">
             <label for="date" style="min-width: 80px; font-size: 14px;">Date:</label>
@@ -81,7 +81,7 @@
 
   <!-- Page: Workout History -->
   <div id="workout-history" class="page">
-    <div class="workout-log-box" style="background:#24262f; padding:15px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+    <div class="workout-log-box content-box">
       <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
         <h2 style="margin: 0; text-align: center; width: 100%;">Workout Log</h2>
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;">
@@ -116,7 +116,7 @@
 
   <!-- Page: Progress Charts -->
   <div id="progress-charts" class="page">
-    <div class="progress-chart-box" style="background:#24262f; padding:15px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+    <div class="progress-chart-box content-box">
       <h2>Progress Chart</h2>
       <div class="chart-controls">
         <label for="chart-type">View: </label>
@@ -136,8 +136,8 @@
   <!-- Page: Manage Exercises -->
   <div id="manage-exercises" class="page">
     <div style="max-width: 800px; margin: 0 auto;">
-      <div style="background:#24262f; padding:18px 16px; border-radius:12px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
-        <h2 style="margin-top:0;">Manage Exercises</h2>
+      <div class="content-box">
+        <h2>Manage Exercises</h2>
         <div style="margin-bottom: 20px;">
           <button id="add-new-exercise-btn" style="padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">+ Add New Exercise</button>
         </div>
