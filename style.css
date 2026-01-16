@@ -9,10 +9,17 @@
   padding: 18px 16px;
   border-radius: 12px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  min-height: 200px;
+  height: auto;
 }
 
 .content-box h2 {
   margin-top: 0;
+}
+
+/* Make pages fill available height */
+.page {
+  min-height: calc(100vh - 180px);
 }
 
 /* Bottom Navigation */
