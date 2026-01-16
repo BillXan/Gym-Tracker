@@ -987,7 +987,22 @@ form.addEventListener('submit',async e=>{
   localStorage.removeItem('creativeWorkout');
   localStorage.removeItem('creativeWorkoutDate');
   
-  await saveData(); renderAll(); form.reset(); dateInput.valueAsDate=new Date(); populateExerciseSelect();
+  await saveData(); 
+  renderAll(); 
+  
+  // Show confirmation animation
+  const confirmationEl = document.getElementById('confirmation-animation');
+  if (confirmationEl) {
+    confirmationEl.style.display = 'block';
+    setTimeout(() => {
+      confirmationEl.style.display = 'none';
+    }, 1000);
+  }
+  
+  // Reset form to defaults
+  form.reset(); 
+  dateInput.valueAsDate=new Date(); 
+  populateExerciseSelect();
 });
 
 window.editWorkout=async function(i){ 
