@@ -1019,7 +1019,19 @@ window.editWorkout=async function(i){
   localStorage.removeItem('creativeWorkoutDate');
   
   await saveData(); 
-  renderAll(); 
+  renderAll();
+  
+  // Navigate to log workout page
+  const navTabs = document.querySelectorAll('.nav-tab');
+  const pages = document.querySelectorAll('.page');
+  
+  navTabs.forEach(t => t.classList.remove('active'));
+  pages.forEach(p => p.classList.remove('active'));
+  
+  const logWorkoutTab = document.querySelector('[data-page="log-workout"]');
+  const logWorkoutPage = document.getElementById('log-workout');
+  if (logWorkoutTab) logWorkoutTab.classList.add('active');
+  if (logWorkoutPage) logWorkoutPage.classList.add('active');
 };
 
 window.deleteWorkout=async function(i){
