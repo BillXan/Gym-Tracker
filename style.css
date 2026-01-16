@@ -162,25 +162,55 @@ button:hover {
 .table-wrapper {
   overflow-x: auto;
   margin-top: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background: #23262f;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+tbody {
+  border-radius: 12px;
+  overflow: hidden;
 }
 th, td {
-  border: 1px solid #444;
-  padding: 10px;
+  border-right: 1px solid #2a2d35;
+  border-bottom: 1px solid #2a2d35;
+  padding: 12px;
   text-align: center;
   white-space: nowrap;
+}
+th:first-child, td:first-child {
+  border-left: none;
+}
+th:last-child, td:last-child {
+  border-right: none;
+}
+tr:first-child th {
+  border-top: none;
+}
+tr:last-child td {
+  border-bottom: none;
 }
 th {
   background: #23262f;
   color: #ff7f50;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85em;
+  letter-spacing: 0.5px;
+}
+td {
+  background: #23262f;
+  color: #e1e1e1;
+}
+tr:hover td {
+  background: #2a2d35;
 }
 .actions button { margin: 0 2px; padding: 4px 8px; font-size: 12px; }
 

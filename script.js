@@ -568,12 +568,12 @@ function renderLog(filter=null){
   // Add table headers
   const headerRow = document.createElement('tr');
   headerRow.innerHTML = `
-    <th style="background-color: #23262f; color: #fff; padding: 10px; border-bottom: 1px solid #444;">Date</th>
-    <th style="background-color: #23262f; color: #fff; padding: 10px; border-bottom: 1px solid #444;">Exercise</th>
-    <th style="background-color: #23262f; color: #fff; padding: 10px; border-bottom: 1px solid #444;">Weight</th>
-    <th style="background-color: #23262f; color: #fff; padding: 10px; border-bottom: 1px solid #444;">Reps</th>
-    <th style="background-color: #23262f; color: #fff; padding: 10px; border-bottom: 1px solid #444;">Notes</th>
-    <th style="background-color: #23262f; color: #fff; padding: 10px; border-bottom: 1px solid #444;">Actions</th>
+    <th>Date</th>
+    <th>Exercise</th>
+    <th>Weight</th>
+    <th>Reps</th>
+    <th>Notes</th>
+    <th>Actions</th>
   `;
   logTable.appendChild(headerRow);
 
