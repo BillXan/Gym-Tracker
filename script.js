@@ -432,7 +432,7 @@ async function loadData() {
   }
 
   // Render creative workout on load and after data changes
-  function renderAll(filter=null){ renderLog(filter); renderChecklist(); renderChart(); renderTodaysCreativeWorkout(); }
+  function renderAll(filter=null){ renderLog(filter); renderChecklist(); renderChart(); renderTodaysCreativeWorkout(); renderQuickStats(); }
 
 async function saveData() {
   try {
@@ -864,7 +864,7 @@ function renderChart(){
   }
 }
 
-function renderAll(filter=null){ renderLog(filter); renderChecklist(); renderChart(); renderTodaysCreativeWorkout(); }
+function renderAll(filter=null){ renderLog(filter); renderChecklist(); renderChart(); renderTodaysCreativeWorkout(); renderQuickStats(); }
 
 // Add new exercise functionality
 async function addNewExercise(exerciseName, muscleGroup, weeklyTarget) {
