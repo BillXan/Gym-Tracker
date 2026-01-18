@@ -1349,9 +1349,15 @@ function renderExercisesList() {
       const thisWeek = getWeekString(new Date());
       const weeklyCount = workouts.filter(w => w.exercise === exercise && getWeekString(new Date(w.date)) === thisWeek).length;
       
+      // Check if any workout for this exercise has "max" in the notes
+      const hasMaxNote = workouts.some(w => w.exercise === exercise && w.notes && w.notes.toLowerCase().includes('max'));
+      
       html += `
         <div style="padding: 10px; background: #2a2d35; border-radius: 6px; border-left: 3px solid ${weeklyCount >= weeklyTarget ? '#28a745' : '#dc3545'};">
-          <div style="font-weight: bold; margin-bottom: 5px;">${exercise}</div>
+          <div style="font-weight: bold; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;">
+            ${exercise}
+            ${hasMaxNote ? '<span style="background: #ffc107; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; font-weight: bold;">MAX</span>' : ''}
+          </div>
           <div style="font-size: 0.9em; color: #ccc;">
             Weekly: ${weeklyCount}/${weeklyTarget} 
             ${weeklyCount >= weeklyTarget ? '✅' : '❌'}
