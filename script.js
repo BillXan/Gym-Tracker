@@ -786,6 +786,7 @@ function renderChecklist(){
   for(const group in exercises){
     exercises[group].forEach(ex=>{
       const maxCount=weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
+      if (maxCount === 0) return; // Skip inactive exercises
       totalRequired += maxCount;
       const count=workouts.filter(w=>w.exercise===ex&&getWeekString(new Date(w.date))===thisWeek).length;
       totalDone += Math.min(count, maxCount);
@@ -803,16 +804,19 @@ function renderChecklist(){
     let groupRequired=0, groupDone=0;
     exercises[group].forEach(ex=>{
       const maxCount=weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
+      if (maxCount === 0) return; // Skip inactive exercises
       groupRequired += maxCount;
       const count=workouts.filter(w=>w.exercise===ex&&getWeekString(new Date(w.date))===thisWeek).length;
       groupDone += Math.min(count, maxCount);
     });
+    if (groupRequired === 0) continue; // Skip groups with no active exercises
     const percent=Math.round((groupDone/groupRequired)*100);
     const title=document.createElement('h3'); title.innerHTML=`${groupIcons[group]||''} ${group} - ✅ ${percent}% done`;
     box.appendChild(title);
     exercises[group].forEach(ex=>{
       const count=workouts.filter(w=>w.exercise===ex && getWeekString(new Date(w.date))===thisWeek).length;
       const maxCount=weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
+      if (maxCount === 0) return; // Skip inactive exercises
       const icon=ex.includes('Press')?'🏋️':ex.includes('Curl')?'💪':ex.includes('Fly')?'🕊️':ex.includes('Squat')?'🦵':ex.includes('Lunges')?'🦵':ex.includes('Deadlift')?'⚡':ex.includes('Pull')?'⬆️':ex.includes('Row')?'↔️':'🏃';
       const li=document.createElement('div'); 
       li.innerHTML=`${icon} ${ex}: <span class="${count>=maxCount?'done':'missing'}">${count} / ${maxCount}</span>`;
