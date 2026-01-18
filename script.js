@@ -258,7 +258,7 @@ async function loadData() {
     let remainingExercises = 0;
     for (const group in exercises) {
       exercises[group].forEach(ex => {
-        const weeklyTarget = weeklyTargets[ex] || 1;
+        const weeklyTarget = weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
         const weeklyCount = workouts.filter(w => w.exercise === ex && getWeekString(new Date(w.date)) === thisWeek).length;
         const remaining = Math.max(0, weeklyTarget - weeklyCount);
         remainingExercises += remaining;
@@ -305,7 +305,7 @@ async function loadData() {
     const allExercises = [];
     for (const group in exercises) {
       exercises[group].forEach(ex => {
-        const weeklyTarget = weeklyTargets[ex] || 1;
+        const weeklyTarget = weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
         const weeklyCount = workouts.filter(w => w.exercise === ex && getWeekString(new Date(w.date)) === thisWeek).length;
         
         // Only include exercises that haven't reached their weekly target
@@ -783,7 +783,7 @@ function renderChecklist(){
   let totalRequired=0, totalDone=0;
   for(const group in exercises){
     exercises[group].forEach(ex=>{
-      const maxCount=weeklyTargets[ex]||1;
+      const maxCount=weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
       totalRequired += maxCount;
       const count=workouts.filter(w=>w.exercise===ex&&getWeekString(new Date(w.date))===thisWeek).length;
       totalDone += Math.min(count, maxCount);
@@ -800,7 +800,7 @@ function renderChecklist(){
     const box=document.createElement('div'); box.className='category-box';
     let groupRequired=0, groupDone=0;
     exercises[group].forEach(ex=>{
-      const maxCount=weeklyTargets[ex]||1;
+      const maxCount=weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
       groupRequired += maxCount;
       const count=workouts.filter(w=>w.exercise===ex&&getWeekString(new Date(w.date))===thisWeek).length;
       groupDone += Math.min(count, maxCount);
@@ -810,7 +810,7 @@ function renderChecklist(){
     box.appendChild(title);
     exercises[group].forEach(ex=>{
       const count=workouts.filter(w=>w.exercise===ex && getWeekString(new Date(w.date))===thisWeek).length;
-      const maxCount=weeklyTargets[ex]||1;
+      const maxCount=weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
       const icon=ex.includes('Press')?'🏋️':ex.includes('Curl')?'💪':ex.includes('Fly')?'🕊️':ex.includes('Squat')?'🦵':ex.includes('Lunges')?'🦵':ex.includes('Deadlift')?'⚡':ex.includes('Pull')?'⬆️':ex.includes('Row')?'↔️':'🏃';
       const li=document.createElement('div'); 
       li.innerHTML=`${icon} ${ex}: <span class="${count>=maxCount?'done':'missing'}">${count} / ${maxCount}</span>`;
@@ -956,7 +956,8 @@ document.getElementById('new-exercise-form').addEventListener('submit', async (e
   
   const exerciseName = document.getElementById('new-exercise-name').value.trim();
   const muscleGroup = document.getElementById('new-muscle-group').value.trim();
-  const weeklyTarget = parseInt(document.getElementById('new-weekly-target').value) || 1;
+  const weeklyTargetInput = document.getElementById('new-weekly-target').value;
+  const weeklyTarget = weeklyTargetInput !== '' ? parseInt(weeklyTargetInput) : 1;
   
   if (!exerciseName || !muscleGroup) {
     alert('Please fill in exercise name and muscle group');
@@ -1226,7 +1227,7 @@ function renderQuickStats() {
     let groupRequired = 0, groupDone = 0;
     
     exercises[group].forEach(ex => {
-      const maxCount = weeklyTargets[ex] || 1;
+      const maxCount = weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
       groupRequired += maxCount;
       totalRequired += maxCount;
       
@@ -1345,22 +1346,25 @@ function renderExercisesList() {
     `;
     
     exercises[group].forEach(exercise => {
-      const weeklyTarget = weeklyTargets[exercise] || 1;
+      const weeklyTarget = weeklyTargets[exercise] !== undefined ? weeklyTargets[exercise] : 1;
       const thisWeek = getWeekString(new Date());
       const weeklyCount = workouts.filter(w => w.exercise === exercise && getWeekString(new Date(w.date)) === thisWeek).length;
       
       // Check if any workout for this exercise has "max" in the notes
       const hasMaxNote = workouts.some(w => w.exercise === exercise && w.notes && w.notes.toLowerCase().includes('max'));
       
+      // Check if target is 0 to grey out
+      const isInactive = weeklyTarget === 0;
+      
       html += `
-        <div style="padding: 10px; background: #2a2d35; border-radius: 6px; border-left: 3px solid ${weeklyCount >= weeklyTarget ? '#28a745' : '#dc3545'};">
-          <div style="font-weight: bold; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;">
+        <div style="padding: 10px; background: ${isInactive ? '#1a1c20' : '#2a2d35'}; border-radius: 6px; border-left: 3px solid ${isInactive ? '#555' : (weeklyCount >= weeklyTarget ? '#28a745' : '#dc3545')}; opacity: ${isInactive ? '0.5' : '1'};">
+          <div style="font-weight: bold; margin-bottom: 5px; display: flex; align-items: center; gap: 8px; color: ${isInactive ? '#666' : 'inherit'};">
             ${exercise}
             ${hasMaxNote ? '<span style="background: #ffc107; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 0.75em; font-weight: bold;">MAX</span>' : ''}
           </div>
-          <div style="font-size: 0.9em; color: #ccc;">
+          <div style="font-size: 0.9em; color: ${isInactive ? '#555' : '#ccc'};">
             Weekly: ${weeklyCount}/${weeklyTarget} 
-            ${weeklyCount >= weeklyTarget ? '✅' : '❌'}
+            ${isInactive ? '⏸️' : (weeklyCount >= weeklyTarget ? '✅' : '❌')}
           </div>
         </div>
       `;

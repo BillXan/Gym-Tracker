@@ -114,7 +114,7 @@ async function loadExercises() {
       //console.log(`Processing row ${index}:`, row);
       const exerciseName = row[0] || '';
       const muscleGroup = row[1] || 'Other';
-      const weeklyTarget = parseInt(row[2]) || 1; // Default to 1 if not specified
+      const weeklyTarget = row[2] !== undefined && row[2] !== '' ? parseInt(row[2]) : 1; // Default to 1 only if empty
       
       //console.log(`Row ${index}: name="${exerciseName}", group="${muscleGroup}", target=${weeklyTarget}`);
       
@@ -256,7 +256,7 @@ app.post('/api/addExercise', async (req, res) => {
       range: 'Exercise List!A:C',
       valueInputOption: 'RAW',
       requestBody: {
-        values: [[exerciseName, muscleGroup, weeklyTarget || 1]]
+        values: [[exerciseName, muscleGroup, weeklyTarget !== undefined ? weeklyTarget : 1]]
       }
     });
     
