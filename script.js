@@ -259,6 +259,7 @@ async function loadData() {
     for (const group in exercises) {
       exercises[group].forEach(ex => {
         const weeklyTarget = weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
+        if (weeklyTarget === 0) return; // Skip inactive exercises
         const weeklyCount = workouts.filter(w => w.exercise === ex && getWeekString(new Date(w.date)) === thisWeek).length;
         const remaining = Math.max(0, weeklyTarget - weeklyCount);
         remainingExercises += remaining;
@@ -306,6 +307,7 @@ async function loadData() {
     for (const group in exercises) {
       exercises[group].forEach(ex => {
         const weeklyTarget = weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
+        if (weeklyTarget === 0) return; // Skip inactive exercises
         const weeklyCount = workouts.filter(w => w.exercise === ex && getWeekString(new Date(w.date)) === thisWeek).length;
         
         // Only include exercises that haven't reached their weekly target
@@ -1228,6 +1230,7 @@ function renderQuickStats() {
     
     exercises[group].forEach(ex => {
       const maxCount = weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
+      if (maxCount === 0) return; // Skip inactive exercises
       groupRequired += maxCount;
       totalRequired += maxCount;
       
