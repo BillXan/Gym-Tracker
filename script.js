@@ -1257,48 +1257,21 @@ function renderQuickStats() {
 
   quickStatsContainer.innerHTML = `
     <!-- Progress Rings -->
-    <div style="display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 10px;">
+    <div style="display: flex; gap: 15px; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 20px;">
       ${createProgressRing(todayProgress, '#ff7f50', "Today's Goal")}
       ${createProgressRing(weeklyProgress, '#28a745', 'Weekly Goal')}
     </div>
     
-    <!-- Muscle Group Progress Rings -->
-    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 400px; margin: 0 auto 10px;">
+    <!-- Muscle Group Progress List -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
       ${Object.entries(weeklyMuscleGroupProgress).map(([group, progress]) => `
-        <div style="text-align: center;">
-          <div style="position: relative; width: 100px; height: 100px; margin: 0 auto;">
-            <svg width="100" height="100" style="transform: rotate(-90deg);">
-              <circle cx="50" cy="50" r="42" fill="none" stroke="#2a2d35" stroke-width="7"></circle>
-              <circle cx="50" cy="50" r="42" fill="none" 
-                stroke="${progress.percentage >= 100 ? '#28a745' : progress.percentage >= 50 ? '#ffc107' : '#ff7f50'}" 
-                stroke-width="7" 
-                stroke-linecap="round"
-                stroke-dasharray="${2 * Math.PI * 42}"
-                stroke-dashoffset="${2 * Math.PI * 42 * (1 - progress.percentage / 100)}"
-                style="transition: stroke-dashoffset 0.6s ease-in-out;">
-              </circle>
-            </svg>
-            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-              <div style="font-size: 0.6em; font-weight: bold; line-height: 1.1; color: #ccc;">${group}</div>
-              <div style="font-size: 0.8em; font-weight: bold; color: ${progress.percentage >= 100 ? '#28a745' : progress.percentage >= 50 ? '#ffc107' : '#ff7f50'}; margin-top: 2px;">
-                ${Math.round(progress.percentage)}%
-              </div>
-            </div>
+        <div style="text-align: center; padding: 12px; background: #1e2124; border-radius: 8px; border-left: 4px solid ${progress.percentage >= 100 ? '#28a745' : progress.percentage >= 50 ? '#ffc107' : '#ff7f50'};">
+          <div style="font-size: 0.95em; font-weight: bold; color: #ccc; margin-bottom: 4px;">${group}</div>
+          <div style="font-size: 0.85em; color: ${progress.percentage >= 100 ? '#28a745' : progress.percentage >= 50 ? '#ffc107' : '#ff7f50'}; font-weight: 600;">
+            ${progress.completed}/${progress.required}
           </div>
         </div>
       `).join('')}
-    </div>
-    
-    <!-- Quick Stats Grid -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px;">
-      <div style="text-align: center; padding: 15px; background: #1e2124; border-radius: 8px;">
-        <div style="font-size: 2em; color: #28a745; font-weight: bold;">${weekWorkouts}</div>
-        <div style="font-size: 0.9em; color: #ccc;">This Week</div>
-      </div>
-      <div style="text-align: center; padding: 15px; background: #1e2124; border-radius: 8px;">
-        <div style="font-size: 2em; color: #17a2b8; font-weight: bold;">${totalWorkouts}</div>
-        <div style="font-size: 0.9em; color: #ccc;">Total</div>
-      </div>
     </div>
   `;
 }
