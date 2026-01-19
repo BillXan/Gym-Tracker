@@ -3,6 +3,16 @@
   margin-bottom: 15px;
 }
 
+/* Spinning animation for loading icon */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Content Box - Consistent styling for all page boxes */
 .content-box {
   background: #24262f;
