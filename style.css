@@ -163,6 +163,8 @@ body {
   padding: 0;
   background: #181a20;
   color: #e0e0e0;
+  overflow: hidden;
+  height: 100vh;
 }
 h1, h2 { text-align: center; margin: 10px 0; }
 .container { 
