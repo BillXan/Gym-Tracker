@@ -65,6 +65,7 @@
   width: 70px;
   min-height: 60px;
   outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .nav-icon {
@@ -89,18 +90,27 @@
 
 .nav-tab:hover {
   color: #ff7f50;
+  outline: none;
+  background: transparent;
 }
 
 .nav-tab:hover .nav-icon {
-  background: rgba(255, 127, 80, 0.15);
+  background: transparent;
+}
+
+.nav-tab:focus {
+  outline: none;
+  background: transparent;
 }
 
 .nav-tab.active {
   color: #ff7f50;
+  outline: none;
+  background: transparent;
 }
 
 .nav-tab.active .nav-icon {
-  background: rgba(255, 127, 80, 0.2);
+  background: transparent;
 }
 
 /* Page System */
@@ -363,6 +373,14 @@ button:focus, button:hover {
   color: #e0e0e0;
   border-color: #ff7f50;
   box-shadow: 0 0 0 3px #ff7f50;
+}
+
+/* Remove outline/border from navigation buttons */
+.nav-tab:focus,
+.nav-tab:hover,
+.nav-tab.active {
+  box-shadow: none !important;
+  border: none !important;
 }
 
 /* Progress Ring Styles */
