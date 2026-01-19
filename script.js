@@ -8,9 +8,7 @@ const dateInput = document.getElementById('date');
 const filterExercise = document.getElementById('filter-exercise');
 const filterStart = document.getElementById('filter-start');
 const filterEnd = document.getElementById('filter-end');
-const applyFilterBtn = document.getElementById('apply-filter');
 const clearFilterBtn = document.getElementById('clear-filter');
-const clearAllBtn = document.getElementById('clear-all');
 const chartTypeSelect = document.getElementById('chart-type');
 const chartExerciseSelect = document.getElementById('chart-exercise');
 
@@ -1101,24 +1099,11 @@ window.deleteWorkout=async function(i){
   renderAll();
 };
 
-applyFilterBtn.addEventListener('click',()=>{ renderAll({exercise:filterExercise.value,start:filterStart.value,end:filterEnd.value}); });
+// Auto-filter on change
+filterExercise.addEventListener('change',()=>{ renderAll({exercise:filterExercise.value,start:filterStart.value,end:filterEnd.value}); });
+filterStart.addEventListener('change',()=>{ renderAll({exercise:filterExercise.value,start:filterStart.value,end:filterEnd.value}); });
+filterEnd.addEventListener('change',()=>{ renderAll({exercise:filterExercise.value,start:filterStart.value,end:filterEnd.value}); });
 clearFilterBtn.addEventListener('click',()=>{ filterExercise.value=''; filterStart.value=''; filterEnd.value=''; renderAll(); });
-clearAllBtn.addEventListener('click',async()=>{
-  if(confirm("Delete all data?")){
-    console.log('[DeleteAll] Sending request to clearSheet endpoint...');
-    const res = await fetch(`${API_BASE}/api/clearSheet`, { method: 'POST' });
-    console.log('[DeleteAll] Response:', res);
-    if (res.ok) {
-      workouts=[];
-      console.log('[DeleteAll] Workouts array cleared, rendering UI...');
-      renderAll();
-    } else {
-      const err = await res.text();
-      console.error('[DeleteAll] Error clearing sheet:', err);
-      alert('Failed to clear sheet: ' + err);
-    }
-  }
-});
 chartTypeSelect.addEventListener('change',renderChart);
 chartExerciseSelect.addEventListener('change',renderChart);
 

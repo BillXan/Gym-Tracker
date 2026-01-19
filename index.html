@@ -84,18 +84,18 @@
     <div class="workout-log-box content-box">
       <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
         <h2 style="margin: 0; text-align: center; width: 100%;">Workout Log</h2>
-        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center;">
-          <span style="font-size:14px; font-weight:normal;">
-            <label for="filter-exercise" style="margin-left:5px;">Exercise:</label>
-            <select id="filter-exercise"><option value="">All Exercises</option></select>
-            <label for="filter-start" style="margin-left:10px;">From:</label>
-            <input type="date" id="filter-start" style="width:130px;" />
-            <label for="filter-end" style="margin-left:5px;">To:</label>
-            <input type="date" id="filter-end" style="width:130px;" />
-            <button id="apply-filter" style="padding:2px 5px;">Go</button>
-            <button id="clear-filter" style="padding:2px 5px;background:#dc3545;">X</button>
-          </span>
-          <button id="clear-all" style="background:#dc3545;">Delete All Data</button>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; max-width: 500px;">
+          <div style="display: flex; align-items: center; gap: 10px; width: 100%; font-size: 14px;">
+            <label for="filter-exercise" style="min-width: 70px;">Exercise:</label>
+            <select id="filter-exercise" style="flex: 1;"><option value="">All Exercises</option></select>
+            <button id="clear-filter" style="padding:6px 12px;background:#dc3545;">Clear</button>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; width: 100%; font-size: 14px;">
+            <label for="filter-start" style="min-width: 70px;">From:</label>
+            <input type="date" id="filter-start" style="flex: 1;" />
+            <label for="filter-end" style="min-width: 35px;">To:</label>
+            <input type="date" id="filter-end" style="flex: 1;" />
+          </div>
         </div>
       </div>
       <div class="table-wrapper">
