@@ -443,3 +443,10 @@ button:focus, button:hover {
   margin: 20px 0;
 }
 
+/* Exercises list scrollable */
+#exercises-list {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
