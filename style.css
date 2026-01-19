@@ -30,6 +30,7 @@
   right: 0;
   display: flex;
   justify-content: space-around;
+  gap: 8px;
   background: #1a1c22;
   border-top: 2px solid #2a2d35;
   padding: 8px 12px;
@@ -50,18 +51,18 @@
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
-  padding: 4px 4px;
-  min-width: 60px;
-  flex: 1;
+  padding: 4px 8px;
+  width: 70px;
   min-height: 60px;
-  margin: 0 2px;
 }
 
 .nav-icon {
   font-size: 24px;
   margin-bottom: 2px;
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
   flex-shrink: 0;
+  padding: 8px;
+  border-radius: 8px;
 }
 
 .nav-label {
@@ -80,7 +81,7 @@
 }
 
 .nav-tab:hover .nav-icon {
-  transform: scale(1.1);
+  background: rgba(255, 127, 80, 0.15);
 }
 
 .nav-tab.active {
@@ -88,7 +89,7 @@
 }
 
 .nav-tab.active .nav-icon {
-  transform: scale(1.15);
+  background: rgba(255, 127, 80, 0.2);
 }
 
 /* Page System */
