@@ -18,7 +18,13 @@ let exercises = {}; // Will be loaded from backend
 let chart;
 
 // Exercises and weekly targets will be loaded from backend
-const groupIcons = {"Chest":"🫀","Legs":"🦿","Back":"🏋️‍♂️","Shoulders":"🤼‍♂️","Arms":"💪"};
+const groupIcons = {
+  "Chest": '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>',
+  "Legs": '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v8"/><path d="m8 14-1.5 3.5"/><path d="m16 14 1.5 3.5"/><path d="M12 10a4 4 0 0 1 4 4v6h-8v-6a4 4 0 0 1 4-4z"/><line x1="8" y1="24" x2="8" y2="20"/><line x1="16" y1="24" x2="16" y2="20"/></svg>',
+  "Back": '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+  "Shoulders": '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M3 21v-2a7 7 0 0 1 7-7h4a7 7 0 0 1 7 7v2"/></svg>',
+  "Arms": '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v20M18 2v20M6 12h12"/></svg>'
+};
 let weeklyTargets = {}; // Will be loaded from backend
 
 // Populate selects
@@ -809,15 +815,15 @@ function renderChecklist(){
     });
     if (groupRequired === 0) continue; // Skip groups with no active exercises
     const percent=Math.round((groupDone/groupRequired)*100);
-    const title=document.createElement('h3'); title.innerHTML=`${groupIcons[group]||''} ${group} - ✅ ${percent}% done`;
+    const title=document.createElement('h3'); title.innerHTML=`${group} - ${percent}% done`;
     box.appendChild(title);
     exercises[group].forEach(ex=>{
       const count=workouts.filter(w=>w.exercise===ex && getWeekString(new Date(w.date))===thisWeek).length;
       const maxCount=weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
       if (maxCount === 0) return; // Skip inactive exercises
-      const icon=ex.includes('Press')?'🏋️':ex.includes('Curl')?'💪':ex.includes('Fly')?'🕊️':ex.includes('Squat')?'🦵':ex.includes('Lunges')?'🦵':ex.includes('Deadlift')?'⚡':ex.includes('Pull')?'⬆️':ex.includes('Row')?'↔️':'🏃';
+      
       const li=document.createElement('div'); 
-      li.innerHTML=`${icon} ${ex}: <span class="${count>=maxCount?'done':'missing'}">${count} / ${maxCount}</span>`;
+      li.innerHTML=`${ex}: <span class="${count>=maxCount?'done':'missing'}">${count} / ${maxCount}</span>`;
       
       // Make exercise clickable
       li.style.cursor = 'pointer';
