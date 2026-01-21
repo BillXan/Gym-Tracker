@@ -25,6 +25,39 @@ const groupIcons = {
   "Shoulders": '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M3 21v-2a7 7 0 0 1 7-7h4a7 7 0 0 1 7 7v2"/></svg>',
   "Arms": '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v20M18 2v20M6 12h12"/></svg>'
 };
+
+// Map exercise names to icon files based on keywords
+function getExerciseIcon(exerciseName) {
+  const name = exerciseName.toLowerCase();
+  
+  // Keyword mappings for each icon
+  if (name.includes('shoulder') || name.includes('lateral') || name.includes('front raise') || name.includes('overhead')) {
+    return 'icons/Shoulder.svg';
+  }
+    if (name.includes('leg') || name.includes('squat') || name.includes('hip') || name.includes('lunge') || name.includes('calf') || name.includes('quad') || name.includes('hamstring')) {
+    return 'icons/Leg.svg';
+  }
+  if (name.includes('tricep') || name.includes('bicep') || name.includes('curl') || name.includes('arm') || name.includes('forearm')) {
+    return 'icons/Arm.svg';
+  }
+  if (name.includes('back') || name.includes('row') || name.includes('pull') || name.includes('lat') || name.includes('deadlift')) {
+    return 'icons/Back.svg';
+  }
+  if (name.includes('core') || name.includes('ab') || name.includes('crunch') || name.includes('plank') || name.includes('oblique')) {
+    return 'icons/Core.svg';
+  }
+  
+  // Default fallback - try to match by group name
+  const group = getExerciseGroup(exerciseName);
+  if (group.toLowerCase().includes('shoulder')) return 'icons/Shoulder.svg';
+  if (group.toLowerCase().includes('arm')) return 'icons/Arm.svg';
+  if (group.toLowerCase().includes('back')) return 'icons/Back.svg';
+  if (group.toLowerCase().includes('leg')) return 'icons/Leg.svg';
+  if (group.toLowerCase().includes('core') || group.toLowerCase().includes('abs')) return 'icons/Core.svg';
+  
+  // Final fallback to Core icon
+  return 'icons/Core.svg';
+}
 let weeklyTargets = {}; // Will be loaded from backend
 
 // Populate selects
@@ -408,7 +441,8 @@ async function loadData() {
     const ul = document.createElement('ul');
     list.forEach(item => {
       const li = document.createElement('li');
-      li.innerHTML = `<b>${item.exercise}</b> <span style="color:gray">(${item.group})</span>`;
+      const iconPath = getExerciseIcon(item.exercise);
+      li.innerHTML = `<img src="${iconPath}" alt="" style="width:24px; height:24px; vertical-align:middle; margin-right:8px; filter:brightness(0) invert(1);"> <b>${item.exercise}</b> <span style="color:gray">(${item.group})</span>`;
       li.style.cursor = 'pointer';
       li.style.padding = '5px';
       li.style.borderRadius = '3px';
@@ -564,9 +598,10 @@ function renderLog(filter=null){
 
     data.forEach((w, i) => {
       const row = document.createElement('tr');
+      const iconPath = getExerciseIcon(w.exercise);
       row.innerHTML = `
         <td>${w.date || ''}</td>
-        <td>${w.exercise || ''}</td>
+        <td><img src="${iconPath}" alt="" style="width:20px; height:20px; vertical-align:middle; margin-right:6px; filter:brightness(0) invert(1);">${w.exercise || ''}</td>
         <td>${w.weight || ''}</td>
         <td>${w.reps || ''}</td>
         <td>${w.notes || ''}</td>
@@ -641,9 +676,10 @@ function renderLog(filter=null){
     );
     
     const row = document.createElement('tr');
+    const iconPath = getExerciseIcon(w.exercise);
     row.innerHTML = `
       <td>${w.date || ''}</td>
-      <td>${w.exercise || ''}</td>
+      <td><img src="${iconPath}" alt="" style="width:20px; height:20px; vertical-align:middle; margin-right:6px; filter:brightness(0) invert(1);">${w.exercise || ''}</td>
       <td>${w.weight || ''}</td>
       <td>${w.reps || ''}</td>
       <td>${w.notes || ''}</td>
@@ -822,12 +858,13 @@ function renderChecklist(){
       const maxCount=weeklyTargets[ex] !== undefined ? weeklyTargets[ex] : 1;
       if (maxCount === 0) return; // Skip inactive exercises
       
-      const li=document.createElement('div'); 
-      li.innerHTML=`${ex}: <span class="${count>=maxCount?'done':'missing'}">${count} / ${maxCount}</span>`;
+      const li=document.createElement('div');
+      const iconPath = getExerciseIcon(ex);
+      li.innerHTML=`<img src="${iconPath}" alt="" style="width:20px; height:20px; vertical-align:middle; margin-right:6px; filter:brightness(0) invert(1);"> ${ex}: <span class="${count>=maxCount?'done':'missing'}">${count} / ${maxCount}</span>`;
       
       // Make exercise clickable
       li.style.cursor = 'pointer';
-      li.style.padding = '8px';
+      li.style.padding = '8px 8px 8px 8px';
       li.style.borderRadius = '4px';
       li.style.transition = 'background-color 0.2s';
       
